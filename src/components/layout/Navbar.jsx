@@ -61,7 +61,7 @@ const Navbar = ({
                 </div>
                 <div>
                   <span className="text-base sm:text-xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">
-                    OOMS<span className="font-light text-gray-600 dark:text-gray-400">Client</span>
+                    OOMS<span className="font-light text-gray-600 dark:text-gray-400">Agent</span>
                   </span>
                 </div>
               </button>
@@ -70,22 +70,6 @@ const Navbar = ({
             {/* Right section */}
             <div className="flex items-center space-x-1 sm:space-x-2">
               
-              {/* Notification Button */}
-              <button
-                onClick={() => navigate('/notification')}
-                className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-md transition-all duration-300 focus:outline-none
-                  bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/40
-                  text-indigo-600 dark:text-indigo-400 font-medium text-sm
-                  border border-indigo-100 dark:border-indigo-800/50 active:scale-95"
-                aria-label="View notifications"
-                title="Notifications"
-              >
-                <Bell className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-slate-600 dark:text-slate-200 transition-colors duration-200" />
-                <span className="sr-only">Notifications</span>
-              </button>
-
-
-
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
@@ -178,14 +162,6 @@ const Navbar = ({
                       >
                         <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 dark:text-gray-400" />
                         My Profile
-                      </button>
-
-                      <button
-                        onClick={() => { setOpenDropdown(false); navigate('/support'); }}
-                        className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-2 sm:gap-3"
-                      >
-                        <LifeBuoy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 dark:text-gray-400" />
-                        Help & Support
                       </button>
 
                       <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>

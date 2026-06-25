@@ -15,6 +15,7 @@ import {
   Bell,
 } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
+import { label } from 'framer-motion/client';
 
 const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -36,21 +37,9 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
       roles: ['admin'],
     },
     {
-      icon: ClipboardList,
-      label: 'Tasks',
-      path: '/tasks',
-      roles: ['admin'],
-    },
-    {
-      icon: BrickWall,
-      label: 'Firms',
-      path: '/firms',
-      roles: ['admin'],
-    },
-    {
-      icon: FileBox,
-      label: 'Documents',
-      path: '/documents',
+      icon: Users,
+      label: 'Clients',
+      path: '/clients',
       roles: ['admin'],
     },
     {
@@ -59,12 +48,6 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
       path: '/ledger',
       roles: ['admin'],
     },
-    {
-      icon: Bell,
-      label: 'Notification',
-      path: '/notification',
-      roles: ['admin'],
-    }
   ];
 
   const menuItems = allMenuItems.filter(item => !item.roles || item.roles.includes(userType));

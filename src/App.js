@@ -9,9 +9,9 @@ import NotFound from "./pages/NotFound";
 import ServerUnreachable from "./pages/ServerUnreachable";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-
+import Services from "./pages/Services";
 import Profile from "./pages/Profile";
-
+import Clients from "./pages/Clients";
 import Ledger from "./pages/Ledger";
 
 
@@ -34,9 +34,9 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
-
+                  <Route path="/clients" element={<Clients />} />
                   <Route path="/profile" element={<Profile />} />
-
+                  <Route path="/services" element={<Services />} />
                   <Route path="/ledger" element={<Ledger />} />
 
                 </Route>
