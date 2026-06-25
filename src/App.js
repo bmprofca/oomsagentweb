@@ -1,0 +1,58 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastProvider } from "./contexts/ToastContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
+
+import MainLayout from "./components/layout/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./pages/NotFound";
+import ServerUnreachable from "./pages/ServerUnreachable";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+
+import Profile from "./pages/Profile";
+
+import Ledger from "./pages/Ledger";
+
+
+function App() {
+  return (
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <ToastProvider>
+            <Routes>
+              {/* Redirect Root to Login */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+              <Route path="/login" element={<Login />} />
+
+              {/* Server Unreachable Route */}
+              <Route path="/server-error" element={<ServerUnreachable />} />
+
+              {/* Routes with MainLayout protected by auth */}
+              <Route element={<ProtectedRoute />}>
+                <Route element={<MainLayout />}>
+                  <Route path="/dashboard" element={<Dashboard />} />
+
+                  <Route path="/profile" element={<Profile />} />
+
+                  <Route path="/ledger" element={<Ledger />} />
+
+                </Route>
+              </Route>
+
+              {/* 404 Not Found Route */}
+              <Route path="/404" element={<NotFound />} />
+
+              {/* Catch all route - redirect to 404 */}
+              <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+          </ToastProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+}
+
+export default App;
