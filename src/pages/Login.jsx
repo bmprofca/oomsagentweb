@@ -18,7 +18,7 @@ function ErrorBanner({ message }) {
   if (!message) return null;
   return (
     <div style={{
-      background: '#fef2f2', border: '0.5px solid #fecaca', color: '#b91c1c',
+      background: '#fff7ed', border: '0.5px solid #fed7aa', color: '#c2410c',
       borderRadius: 8, padding: '9px 12px', fontSize: 12, marginBottom: 16,
       display: 'flex', alignItems: 'center', gap: 6,
       animation: 'fadeIn .2s ease',
@@ -42,16 +42,16 @@ function Stepper({ step }) {
               width: 24, height: 24, borderRadius: '50%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 10, fontWeight: 500, flexShrink: 0, transition: 'all .3s',
-              background: done ? '#2563eb' : active ? '#0f172a' : '#f1f5f9',
-              color: done || active ? '#fff' : '#94a3b8',
-              border: `1.5px solid ${done ? '#2563eb' : active ? '#0f172a' : '#e2e8f0'}`,
+              background: done ? '#ea580c' : active ? '#1c1917' : '#f5f5f4',
+              color: done || active ? '#fff' : '#a8a29e',
+              border: `1.5px solid ${done ? '#ea580c' : active ? '#1c1917' : '#e7e5e4'}`,
             }}>
               {done ? '✓' : s}
             </div>
             {s < 3 && (
-              <div style={{ flex: 1, height: 1.5, background: '#e2e8f0', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ flex: 1, height: 1.5, background: '#e7e5e4', position: 'relative', overflow: 'hidden' }}>
                 <div style={{
-                  position: 'absolute', inset: 0, background: '#0f172a',
+                  position: 'absolute', inset: 0, background: '#1c1917',
                   transform: step > s ? 'scaleX(1)' : 'scaleX(0)',
                   transformOrigin: 'left', transition: 'transform .4s ease',
                 }} />
@@ -60,7 +60,7 @@ function Stepper({ step }) {
           </React.Fragment>
         );
       })}
-      <span style={{ marginLeft: 4, fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+      <span style={{ marginLeft: 4, fontSize: 11, color: '#a8a29e', whiteSpace: 'nowrap' }}>
         {labels[step - 1]}
       </span>
     </div>
@@ -72,7 +72,7 @@ function Field({ id, label, value, onChange, placeholder, type = 'text', disable
   return (
     <div style={{ marginBottom: 18 }}>
       <label htmlFor={id} style={{
-        display: 'block', fontSize: 11, fontWeight: 500, color: '#374151',
+        display: 'block', fontSize: 11, fontWeight: 500, color: '#44403c',
         letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 6,
       }}>
         {label}
@@ -84,15 +84,15 @@ function Field({ id, label, value, onChange, placeholder, type = 'text', disable
         onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
         style={{
           display: 'block', width: '100%', height: 40, padding: '0 12px',
-          fontSize: 14, fontFamily: 'inherit', background: '#f8fafc',
-          border: `0.5px solid ${focused ? '#2563eb' : '#e2e8f0'}`,
-          borderRadius: 8, color: '#0f172a', outline: 'none',
-          boxShadow: focused ? '0 0 0 3px #eff6ff' : 'none',
+          fontSize: 14, fontFamily: 'inherit', background: '#fafaf9',
+          border: `0.5px solid ${focused ? '#ea580c' : '#e7e5e4'}`,
+          borderRadius: 8, color: '#1c1917', outline: 'none',
+          boxShadow: focused ? '0 0 0 3px #fff7ed' : 'none',
           transition: 'border .15s, box-shadow .15s', boxSizing: 'border-box',
           ...extraStyle,
         }}
       />
-      {hint && <p style={{ marginTop: 5, fontSize: 11, color: '#94a3b8' }}>{hint}</p>}
+      {hint && <p style={{ marginTop: 5, fontSize: 11, color: '#a8a29e' }}>{hint}</p>}
     </div>
   );
 }
@@ -104,7 +104,7 @@ function PrimaryButton({ label, loading, disabled, onClick, type = 'submit' }) {
       style={{
         width: '100%', height: 42, display: 'flex', alignItems: 'center',
         justifyContent: 'center', gap: 8,
-        background: disabled || loading ? '#cbd5e1' : '#0f172a',
+        background: disabled || loading ? '#d6d3d1' : '#1c1917',
         color: '#fff', border: 'none', borderRadius: 8,
         fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
         cursor: disabled || loading ? 'not-allowed' : 'pointer',
@@ -123,7 +123,7 @@ function GhostButton({ label, onClick, muted }) {
     <button type="button" onClick={onClick} style={{
       background: 'none', border: 'none', cursor: 'pointer',
       fontFamily: 'inherit', fontSize: 12, padding: 0,
-      color: muted ? '#94a3b8' : '#2563eb',
+      color: muted ? '#a8a29e' : '#ea580c',
     }}>
       {label}
     </button>
@@ -133,71 +133,87 @@ function GhostButton({ label, onClick, muted }) {
 /* ─── hero left panel ──────────────────────────────────────────────────── */
 
 const FEATURES = [
-  { icon: '📱', title: 'Mobile-based identity', desc: 'Your number acts as your unique key — no username to remember.' },
-  { icon: '🔐', title: 'OTP verification', desc: 'A one-time code is sent to your registered mobile for every login.' },
-  { icon: '🚫', title: 'Zero stored passwords', desc: 'We never store credentials — each session is independently verified.' },
+  { icon: '📍', title: 'Location-aware access', desc: 'Your login is tied to your assigned region and active deployment zone.' },
+  { icon: '⚡', title: 'Fast OTP login', desc: 'Get in quickly with a one-time code — built for agents who are always on the move.' },
+  { icon: '🛡️', title: 'Secure session handling', desc: 'Each session is independently verified. No shared credentials, no stored passwords.' },
 ];
 
 function HeroPanel() {
   return (
     <div style={{
-      background: '#0d1117', display: 'flex', flexDirection: 'column',
+      background: '#111827',
+      display: 'flex', flexDirection: 'column',
       padding: '52px 48px', position: 'relative', overflow: 'hidden', minHeight: '100vh',
     }}>
-      {/* subtle radial glow */}
+      {/* amber glow accents */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        backgroundImage: 'radial-gradient(circle at 20% 50%, #1e293b55 0%, transparent 60%), radial-gradient(circle at 80% 20%, #312e8144 0%, transparent 50%)',
+        backgroundImage: `
+          radial-gradient(ellipse 60% 40% at 10% 60%, #92400e22 0%, transparent 70%),
+          radial-gradient(ellipse 50% 30% at 85% 15%, #78350f18 0%, transparent 60%)
+        `,
       }} />
 
-      {/* grid overlay */}
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', opacity: .06 }}>
+      {/* topographic contour overlay */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', opacity: .045 }}>
         <defs>
-          <pattern id="hgrid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" strokeWidth=".8" />
+          <pattern id="topo" width="60" height="60" patternUnits="userSpaceOnUse">
+            <circle cx="30" cy="30" r="20" fill="none" stroke="#f97316" strokeWidth=".8" />
+            <circle cx="30" cy="30" r="10" fill="none" stroke="#f97316" strokeWidth=".6" />
+            <circle cx="0"  cy="0"  r="20" fill="none" stroke="#f97316" strokeWidth=".8" />
+            <circle cx="60" cy="60" r="20" fill="none" stroke="#f97316" strokeWidth=".8" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#hgrid)" />
+        <rect width="100%" height="100%" fill="url(#topo)" />
       </svg>
 
       {/* logo */}
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 10, marginBottom: 'auto' }}>
         <div style={{
-          width: 32, height: 32, borderRadius: 7, background: '#6366f1',
+          width: 32, height: 32, borderRadius: 7,
+          background: 'linear-gradient(135deg, #ea580c, #dc2626)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
-        }}>⬡</div>
-        <span style={{ color: '#f1f5f9', fontWeight: 500, fontSize: 14, letterSpacing: '.06em' }}>OOMS</span>
+        }}>◈</div>
+        <div>
+          <span style={{ color: '#f5f5f4', fontWeight: 600, fontSize: 13, letterSpacing: '.08em' }}>OOMS</span>
+          <span style={{
+            marginLeft: 8, fontSize: 9, fontWeight: 600, letterSpacing: '.12em',
+            color: '#ea580c', textTransform: 'uppercase',
+            background: '#1c0a00', border: '0.5px solid #7c2d12',
+            borderRadius: 4, padding: '2px 6px',
+          }}>AGENT</span>
+        </div>
       </div>
 
       {/* hero body */}
       <div style={{ position: 'relative', zIndex: 1, margin: 'auto 0', padding: '40px 0' }}>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: '#1e293b', border: '0.5px solid #334155',
+          background: '#1c1917', border: '0.5px solid #292524',
           borderRadius: 20, padding: '5px 12px', marginBottom: 28,
         }}>
-          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
-          <span style={{ color: '#94a3b8', fontSize: 11, letterSpacing: '.04em' }}>Passwordless · Secure · Fast</span>
+          <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#f97316' }} />
+          <span style={{ color: '#78716c', fontSize: 11, letterSpacing: '.04em' }}>Field ops · Real-time · Verified</span>
         </div>
 
-        <h1 style={{ color: '#f8fafc', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 500, lineHeight: 1.2, margin: '0 0 14px' }}>
-          Your mobile is<br />your <span style={{ color: '#818cf8' }}>identity.</span>
+        <h1 style={{ color: '#fafaf9', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, lineHeight: 1.2, margin: '0 0 14px', letterSpacing: '-.01em' }}>
+          Deployed and<br />ready to <span style={{ color: '#fb923c' }}>operate.</span>
         </h1>
-        <p style={{ color: '#475569', fontSize: 13, lineHeight: 1.7, maxWidth: 300, margin: '0 0 44px' }}>
-          Organisation Operations Management System — sign in with just your number. No passwords, no friction.
+        <p style={{ color: '#57534e', fontSize: 13, lineHeight: 1.7, maxWidth: 300, margin: '0 0 44px' }}>
+          Agent portal for OOMS field staff. Sign in with your registered mobile — no passwords, instant access.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {FEATURES.map((f, i) => (
             <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
               <div style={{
-                width: 34, height: 34, borderRadius: 8, background: '#1e293b',
-                border: '0.5px solid #334155', display: 'flex', alignItems: 'center',
+                width: 34, height: 34, borderRadius: 8, background: '#1c1917',
+                border: '0.5px solid #292524', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', fontSize: 15, flexShrink: 0,
               }}>{f.icon}</div>
               <div>
-                <p style={{ color: '#e2e8f0', fontSize: 12, fontWeight: 500, margin: '0 0 3px' }}>{f.title}</p>
-                <p style={{ color: '#475569', fontSize: 11, lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
+                <p style={{ color: '#e7e5e4', fontSize: 12, fontWeight: 500, margin: '0 0 3px' }}>{f.title}</p>
+                <p style={{ color: '#57534e', fontSize: 11, lineHeight: 1.55, margin: 0 }}>{f.desc}</p>
               </div>
             </div>
           ))}
@@ -206,17 +222,17 @@ function HeroPanel() {
 
       {/* footer badge */}
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', animation: 'pulse 2.4s ease-in-out infinite' }} />
-        <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
-        <span style={{ color: '#334155', fontSize: 11 }}>Secure channel active · 256-bit TLS</span>
+        <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#f97316', animation: 'pulse 2.4s ease-in-out infinite' }} />
+        <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}`}</style>
+        <span style={{ color: '#292524', fontSize: 11 }}>Encrypted channel active · 256-bit TLS</span>
       </div>
     </div>
   );
 }
 
-/* ─── main Login component ─────────────────────────────────────────────── */
+/* ─── main LoginAgent component ────────────────────────────────────────── */
 
-export default function Login() {
+export default function LoginAgent() {
   const { login } = useAuth();
 
   const [step, setStep] = useState(1);
@@ -229,7 +245,7 @@ export default function Login() {
   const [tempToken, setTempToken] = useState('');
   const [profiles, setProfiles] = useState([]);
 
-  /* handlers */
+  /* handlers — same logic as client login */
   const handleSendOtp = async (e) => {
     e?.preventDefault();
     setError('');
@@ -261,7 +277,7 @@ export default function Login() {
       const data = await res.json();
       if (res.ok && data.success !== false && data.token) {
         setTempToken(data.token);
-        localStorage.setItem('ooms_user_data', JSON.stringify({ token: data.token }));
+        localStorage.setItem('ooms_agent_data', JSON.stringify({ token: data.token }));
         const profileRes = await apiCall('/profile/list', 'GET');
         const profileData = await profileRes.json();
         if (profileRes.ok && profileData.success !== false && profileData.data?.length > 0) {
@@ -272,15 +288,15 @@ export default function Login() {
             setStep(3);
           }
         } else {
-          setError('No profiles found for this user.');
-          localStorage.removeItem('ooms_user_data');
+          setError('No agent profiles found for this number.');
+          localStorage.removeItem('ooms_agent_data');
         }
       } else {
         setError(data.message || 'Invalid OTP.');
       }
     } catch {
       setError('Network error. Please try again.');
-      localStorage.removeItem('ooms_user_data');
+      localStorage.removeItem('ooms_agent_data');
     } finally {
       setIsSubmitting(false);
     }
@@ -294,13 +310,13 @@ export default function Login() {
     setStep(1);
     setError('');
     setOtp('');
-    localStorage.removeItem('ooms_user_data');
+    localStorage.removeItem('ooms_agent_data');
   };
 
   /* card content per step */
   const cardContent = {
     1: {
-      eyebrow: 'Sign in',
+      eyebrow: 'Agent sign-in',
       title: 'Enter your mobile',
       sub: "We'll send a one-time code to your registered number.",
       body: (
@@ -355,7 +371,7 @@ export default function Login() {
     3: {
       eyebrow: 'Almost there',
       title: 'Select a profile',
-      sub: 'Multiple accounts found. Choose which one to access.',
+      sub: 'Multiple agent profiles found. Choose which one to access.',
       body: (
         <div style={{ animation: 'slideIn .25s ease' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 280, overflowY: 'auto' }}>
@@ -364,19 +380,19 @@ export default function Login() {
                 key={idx}
                 onClick={() => handleProfileSelect(profile)}
                 style={{
-                  padding: 14, border: '0.5px solid #e2e8f0', borderRadius: 8,
+                  padding: 14, border: '0.5px solid #e7e5e4', borderRadius: 8,
                   cursor: 'pointer', transition: 'border .15s, background .15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#0f172a'; e.currentTarget.style.background = '#f8fafc'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = 'transparent'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#1c1917'; e.currentTarget.style.background = '#fafaf9'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#e7e5e4'; e.currentTarget.style.background = 'transparent'; }}
               >
-                <p style={{ fontSize: 13, fontWeight: 500, color: '#0f172a', margin: '0 0 3px' }}>{profile.name}</p>
-                <p style={{ fontSize: 12, color: '#64748b', margin: '0 0 2px' }}>Branch: {profile.branch?.name || 'N/A'}</p>
-                <p style={{ fontSize: 11, color: '#94a3b8', margin: 0 }}>{profile.email}</p>
+                <p style={{ fontSize: 13, fontWeight: 500, color: '#1c1917', margin: '0 0 3px' }}>{profile.name}</p>
+                <p style={{ fontSize: 12, color: '#78716c', margin: '0 0 2px' }}>Branch: {profile.branch?.name || 'N/A'}</p>
+                <p style={{ fontSize: 11, color: '#a8a29e', margin: 0 }}>{profile.email}</p>
               </div>
             ))}
           </div>
-          <div style={{ height: 1, background: '#e2e8f0', margin: '20px 0' }} />
+          <div style={{ height: 1, background: '#e7e5e4', margin: '20px 0' }} />
           <GhostButton label="← Back to login" onClick={goBack} />
         </div>
       ),
@@ -388,42 +404,53 @@ export default function Login() {
   return (
     <div style={{
       minHeight: '100vh', fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
-      background: '#f8fafc', position: 'relative',
+      background: '#fafaf9', position: 'relative',
     }}>
       <style>{`
         @media (max-width: 700px) {
-          .ooms-hero { display: none !important; }
-          .ooms-right { padding: 24px 16px !important; }
-          .ooms-card { padding: 28px 20px !important; }
+          .agent-hero { display: none !important; }
+          .agent-right { padding: 24px 16px !important; }
+          .agent-card { padding: 28px 20px !important; }
         }
       `}</style>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '100vh' }}>
 
         {/* left hero */}
-        <div className="ooms-hero">
+        <div className="agent-hero">
           <HeroPanel />
         </div>
 
         {/* right form */}
-        <div className="ooms-right" style={{
+        <div className="agent-right" style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '48px 32px', background: '#f8fafc',
+          padding: '48px 32px', background: '#fafaf9',
         }}>
-          <div className="ooms-card" style={{
+          <div className="agent-card" style={{
             width: '100%', maxWidth: 384, background: '#ffffff',
-            borderRadius: 16, border: '0.5px solid #e2e8f0',
+            borderRadius: 16, border: '0.5px solid #e7e5e4',
             padding: '36px 32px', boxShadow: '0 4px 24px rgba(0,0,0,.05)',
             boxSizing: 'border-box',
           }}>
+            {/* agent badge */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: '#fff7ed', border: '0.5px solid #fed7aa',
+              borderRadius: 6, padding: '3px 8px', marginBottom: 16,
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 600, color: '#ea580c', letterSpacing: '.08em', textTransform: 'uppercase' }}>
+                ◈ Agent portal
+              </span>
+            </div>
+
             {/* card header */}
-            <p style={{ fontSize: 11, fontWeight: 500, color: '#2563eb', letterSpacing: '.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>
+            <p style={{ fontSize: 11, fontWeight: 500, color: '#ea580c', letterSpacing: '.08em', textTransform: 'uppercase', margin: '0 0 8px' }}>
               {current.eyebrow}
             </p>
-            <h2 style={{ fontSize: 20, fontWeight: 500, color: '#0f172a', margin: '0 0 6px', lineHeight: 1.25 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#1c1917', margin: '0 0 6px', lineHeight: 1.25 }}>
               {current.title}
             </h2>
-            <p style={{ fontSize: 13, color: '#64748b', margin: '0 0 28px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: 13, color: '#78716c', margin: '0 0 28px', lineHeight: 1.6 }}>
               {current.sub}
             </p>
 
@@ -431,9 +458,9 @@ export default function Login() {
             <ErrorBanner message={error} />
             {current.body}
 
-            <p style={{ textAlign: 'center', fontSize: 11, color: '#cbd5e1', marginTop: 24, lineHeight: 1.6 }}>
+            <p style={{ textAlign: 'center', fontSize: 11, color: '#d6d3d1', marginTop: 24, lineHeight: 1.6 }}>
               By continuing you agree to OOMS{' '}
-              <span style={{ color: '#94a3b8', textDecoration: 'underline', cursor: 'pointer' }}>terms of access</span>
+              <span style={{ color: '#a8a29e', textDecoration: 'underline', cursor: 'pointer' }}>agent terms of access</span>
             </p>
           </div>
         </div>
