@@ -13,6 +13,8 @@ import Services from "./pages/Services";
 import Profile from "./pages/Profile";
 import Clients from "./pages/Clients";
 import Ledger from "./pages/Ledger";
+import Support from "./pages/Support";
+import Task from "./pages/Tasks";
 
 
 function App() {
@@ -38,7 +40,8 @@ function App() {
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/services" element={<Services />} />
                   <Route path="/ledger" element={<Ledger />} />
-
+                  <Route path="/support" element={<Support />} />
+                  <Route path="/task" element={<Task />} />
                 </Route>
               </Route>
 

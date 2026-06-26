@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 
-const API_BASE = "https://api.ooms.in/client";
+const API_BASE = "https://api.ooms.in/agent";
 
 /**
  * Unified API calling utility

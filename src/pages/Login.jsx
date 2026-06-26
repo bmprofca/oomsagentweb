@@ -277,40 +277,51 @@ export default function LoginAgent() {
       const data = await res.json();
       if (res.ok && data.success !== false && data.token) {
         setTempToken(data.token);
-        localStorage.setItem('ooms_agent_data', JSON.stringify({ token: data.token }));
+        // Temporarily write ooms_user_data so that apiCall sends the correct
+        // token / countrycode / mobile headers when fetching /profile/list
+        const tempUserData = {
+          token: data.token,
+          country_code: countryCode,
+          mobile: mobileSent,
+        };
+        localStorage.setItem('ooms_user_data', JSON.stringify(tempUserData));
+
         const profileRes = await apiCall('/profile/list', 'GET');
         const profileData = await profileRes.json();
         if (profileRes.ok && profileData.success !== false && profileData.data?.length > 0) {
           if (profileData.data.length === 1) {
-            login(data.token, profileData.data[0], { countrycode: countryCode, mobile: mobileSent });
+            // login() will overwrite ooms_user_data with full profile data
+            login(data.token, profileData.data[0], { country_code: countryCode, mobile: mobileSent });
           } else {
             setProfiles(profileData.data);
             setStep(3);
           }
         } else {
           setError('No agent profiles found for this number.');
-          localStorage.removeItem('ooms_agent_data');
+          localStorage.removeItem('ooms_user_data');
         }
       } else {
         setError(data.message || 'Invalid OTP.');
       }
     } catch {
       setError('Network error. Please try again.');
-      localStorage.removeItem('ooms_agent_data');
+      localStorage.removeItem('ooms_user_data');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleProfileSelect = (profile) => {
-    login(tempToken, profile, { countrycode: countryCode, mobile: mobileSent });
+    // login() will merge token + profile + authMeta into ooms_user_data
+    login(tempToken, profile, { country_code: countryCode, mobile: mobileSent });
   };
 
   const goBack = () => {
     setStep(1);
     setError('');
     setOtp('');
-    localStorage.removeItem('ooms_agent_data');
+    // Clear any temporary auth data written during the OTP/profile flow
+    localStorage.removeItem('ooms_user_data');
   };
 
   /* card content per step */
