@@ -36,8 +36,7 @@ export const AuthProvider = ({ children }) => {
       const newData = { ...userData, ...profile };
       setUserData(newData);
       localStorage.setItem('ooms_user_data', JSON.stringify(newData));
-      // Optionally navigate to dashboard after switching profile
-      navigate('/dashboard');
+      // Do NOT navigate here — the modal calls closeProfileModal() itself
     }
   };
 

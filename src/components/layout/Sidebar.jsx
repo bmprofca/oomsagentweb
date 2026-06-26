@@ -31,23 +31,14 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
       path: '/dashboard',
     },
     {
-      icon: ConciergeBell,
-      label: 'Services',
-      path: '/services',
-      roles: ['admin'],
-    },
-    {
-      icon: Users,
-      label: 'Clients',
-      path: '/clients',
-      roles: ['admin'],
-    },
-    {
-      icon: Receipt,
-      label: 'Ledger',
-      path: '/ledger',
-      roles: ['admin'],
-    },
+      icon: FileBox,
+      label: 'Tasks',
+      path: '/task',
+    },{
+      icon:LifeBuoy,
+      label:'Help & Support',
+      path:'/support'
+    }
   ];
 
   const menuItems = allMenuItems.filter(item => !item.roles || item.roles.includes(userType));

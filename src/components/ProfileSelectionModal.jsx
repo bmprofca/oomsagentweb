@@ -26,10 +26,7 @@ const ProfileSelectionModal = () => {
 
       if (response.ok && data.success !== false && data.data && data.data.length > 0) {
         setProfiles(data.data);
-        // Auto select if only 1 profile found
-        if (data.data.length === 1) {
-          handleSelect(data.data[0]);
-        }
+        // Always show the list so the user consciously picks a profile
       } else {
         setError('No profiles found or failed to fetch.');
       }

@@ -23,8 +23,8 @@ const FAQS = [
     category: 'General',
     questions: [
       {
-        q: "What is OOMS Client Portal?",
-        a: "OOMS (Office Operations Management System) is an integrated platform designed for managing services, documents, firms, ledger updates, and tasks related to your organization. This portal allows clients to track ongoing projects, check invoicing, upload necessary documentation, and communicate with branch support seamlessly."
+        q: "What is OOMS Agent Portal?",
+        a: "OOMS (Office Operations Management System) is an integrated platform designed for managing services, documents, firms, ledger updates, and tasks related to your organization. This portal allows agents to manage ongoing projects, check invoicing, upload necessary documentation, and communicate with branch support seamlessly."
       },
       {
         q: "How do I update my profile details?",
@@ -175,20 +175,20 @@ export default function Support() {
         // Modern skeleton loading
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-8 animate-pulse">
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 h-96">
+            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-96">
               <div className="h-5 w-1/4 bg-slate-200 dark:bg-slate-800 rounded-full mb-6"></div>
               <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-xl mb-6"></div>
               <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-800 rounded-full mb-3"></div>
               <div className="h-3 w-1/2 bg-slate-100 dark:bg-slate-800 rounded-full mb-3"></div>
             </div>
           </div>
-          <div className="space-y-8">
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 h-80">
+          <div className="space-y-6 md:space-y-8">
+            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-80">
               <div className="h-5 w-1/2 bg-slate-200 dark:bg-slate-800 rounded-full mb-6"></div>
-              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-xl mb-4"></div>
-              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-xl"></div>
+              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-4"></div>
+              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl"></div>
             </div>
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-8 h-44">
+            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-44">
               <div className="h-5 w-1/2 bg-slate-200 dark:bg-slate-800 rounded-full mb-4"></div>
               <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full"></div>
             </div>
@@ -198,39 +198,39 @@ export default function Support() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-8 items-start w-full">
 
           {/* ================= LEFT SECTION (FAQ) ================= */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 md:space-y-8">
 
             {/* FAQ Search and Accordions */}
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
-              <div className="p-8 border-b border-slate-50 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white dark:from-slate-800/40 dark:to-slate-900/80">
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
+              <div className="p-5 md:p-8 border-b border-slate-100 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white/40 dark:from-slate-800/40 dark:to-slate-900/80">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div>
-                    <h2 className="text-xl font-semibold text-slate-800 dark:text-white flex items-center gap-3">
-                      <span className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                        <Sparkles size={18} className="text-blue-600 dark:text-blue-400" />
+                    <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3 tracking-tight">
+                      <span className="p-2 bg-blue-500 rounded-xl shadow-lg shadow-blue-500/30 text-white">
+                        <Sparkles size={18} className="stroke-[2.5]" />
                       </span>
                       Frequently Asked Questions
                     </h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 ml-12">
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2 ml-2 md:ml-12">
                       Quick self-service lookup for portal features
                     </p>
                   </div>
 
                   {/* Search Box */}
-                  <div className="relative w-full md:w-80">
+                  <div className="relative w-full md:w-80 group">
                     <input
                       type="text"
                       placeholder="Search FAQs..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-12 pr-5 py-3 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
+                      className="w-full pl-12 pr-5 py-3 text-sm font-medium rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
                     />
-                    <Search size={16} className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500" />
+                    <Search size={16} className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors" />
                   </div>
                 </div>
               </div>
 
-              <div className="p-8 divide-y divide-slate-50 dark:divide-slate-800/60">
+              <div className="p-5 md:p-8 divide-y divide-slate-100 dark:divide-slate-800/60">
                 {filteredFaqs.length === 0 ? (
                   <div className="text-center py-16">
                     <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -285,20 +285,20 @@ export default function Support() {
           <div className="space-y-8">
 
             {/* Direct Contact Cards */}
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
-              <div className="p-8 border-b border-slate-50 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white dark:from-slate-800/40 dark:to-slate-900/80">
-                <h2 className="text-xl font-semibold text-slate-800 dark:text-white flex items-center gap-3">
-                  <span className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                    <LifeBuoy size={18} className="text-blue-600 dark:text-blue-400" />
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
+              <div className="p-5 md:p-8 border-b border-slate-100 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white/40 dark:from-slate-800/40 dark:to-slate-900/80">
+                <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3 tracking-tight">
+                  <span className="p-2 bg-blue-500 rounded-xl shadow-lg shadow-blue-500/30 text-white">
+                    <LifeBuoy size={18} className="stroke-[2.5]" />
                   </span>
                   Direct Connections
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 ml-12">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2 ml-2 md:ml-12">
                   Talk to branch support agents immediately
                 </p>
               </div>
 
-              <div className="p-8 space-y-8">
+              <div className="p-5 md:p-8 space-y-8">
 
                 {/* Phone Numbers section */}
                 <div>
@@ -395,20 +395,20 @@ export default function Support() {
             </div>
 
             {/* Support Hours Card */}
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden transition-all hover:shadow-md">
-              <div className="p-8 border-b border-slate-50 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white dark:from-slate-800/40 dark:to-slate-900/80">
-                <h2 className="text-xl font-semibold text-slate-800 dark:text-white flex items-center gap-3">
-                  <span className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                    <Clock size={18} className="text-blue-600 dark:text-blue-400" />
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
+              <div className="p-5 md:p-8 border-b border-slate-100 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white/40 dark:from-slate-800/40 dark:to-slate-900/80">
+                <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3 tracking-tight">
+                  <span className="p-2 bg-blue-500 rounded-xl shadow-lg shadow-blue-500/30 text-white">
+                    <Clock size={18} className="stroke-[2.5]" />
                   </span>
                   Support Hours
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 ml-12">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2 ml-2 md:ml-12">
                   Availability of branch office staff
                 </p>
               </div>
 
-              <div className="p-8 space-y-5 text-sm text-slate-600 dark:text-slate-400">
+              <div className="p-5 md:p-8 space-y-5 text-sm text-slate-600 dark:text-slate-400">
                 <div className="flex items-start gap-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl p-5">
                   <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                     <Calendar size={16} className="text-blue-600 dark:text-blue-400" />
