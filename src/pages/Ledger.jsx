@@ -1,258 +1,682 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PageContentSkeleton } from '../components/SkeletonComponent';
 import {
-  IndianRupee, TrendingUp, TrendingDown, ArrowUpCircle, ArrowDownCircle,
-  List, Eye, Download
+  Receipt, Eye, TrendingUp, TrendingDown, Wallet, ArrowRightLeft, Download, FileText,
 } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import ManagementHub from '../components/common/ManagementHub';
 import ManagementTable from '../components/common/ManagementTable';
-import ManagementCard from '../components/common/ManagementCard';
-import ManagementGrid from '../components/common/ManagementGrid';
-import ManagementFilters from '../components/common/ManagementFilters';
+import AdvancedDateFilter from '../components/common/AdvancedDateFilter';
+import SelectField from '../components/common/SelectField';
+import Modal from '../components/common/Modal';
 import Pagination, { usePagination } from '../components/common/PaginationComponent';
+import { formatAmount } from '../utils/helpers';
+import { apiCall } from '../utils/apiCall';
+import toast from 'react-hot-toast';
 
-// ── Dummy Data ────────────────────────────────────────────────────────────────
-const DUMMY_LEDGER = [
-  { ledger_id: 'l1', date: '15 Jun 2025', description: 'GST Return Filing – Arora Enterprises', type: 'credit', amount: 1499, firm: 'Arora Enterprises', task_id: 't2', balance: 48250 },
-  { ledger_id: 'l2', date: '14 Jun 2025', description: 'Office Rent – June 2025', type: 'debit', amount: 15000, firm: null, task_id: null, balance: 46751 },
-  { ledger_id: 'l3', date: '12 Jun 2025', description: 'ITR Filing – Amit Verma', type: 'credit', amount: 999, firm: 'Individual', task_id: 't3', balance: 61751 },
-  { ledger_id: 'l4', date: '10 Jun 2025', description: 'Audit Report – Global Exports', type: 'credit', amount: 8500, firm: 'Global Exports', task_id: 't5', balance: 60752 },
-  { ledger_id: 'l5', date: '08 Jun 2025', description: 'Software Subscription', type: 'debit', amount: 2999, firm: null, task_id: null, balance: 52252 },
-  { ledger_id: 'l6', date: '05 Jun 2025', description: 'ROC Filing – Sunrise Pvt Ltd', type: 'credit', amount: 4999, firm: 'Sunrise Pvt Ltd', task_id: 't3', balance: 55251 },
-  { ledger_id: 'l7', date: '03 Jun 2025', description: 'TDS Return – Blue Wave Tech', type: 'credit', amount: 1800, firm: 'Blue Wave Tech', task_id: 't4', balance: 50252 },
-  { ledger_id: 'l8', date: '01 Jun 2025', description: 'Staff Salary – May 2025', type: 'debit', amount: 45000, firm: null, task_id: null, balance: 48452 },
-  { ledger_id: 'l9', date: '28 May 2025', description: 'Company Incorporation – Mehta & Co.', type: 'credit', amount: 7999, firm: 'Mehta & Co.', task_id: 't6', balance: 93452 },
-  { ledger_id: 'l10', date: '25 May 2025', description: 'GST Registration – Horizon Mfg.', type: 'credit', amount: 2999, firm: 'Horizon Manufacturing', task_id: 't7', balance: 85453 },
-];
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-const DUMMY_SUMMARY = {
-  totalCredit: 28795,
-  totalDebit: 62999,
-  openingBalance: 82454,
-  closingBalance: 48250,
+const TRANSACTION_TYPE_CONFIG = {
+  sale: { label: 'Sale', color: 'text-blue-700 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800' },
+  receive: { label: 'Receive', color: 'text-emerald-700 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800' },
+  payment: { label: 'Payment', color: 'text-amber-700 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800' },
+  journal: { label: 'Journal', color: 'text-violet-700 bg-violet-50 dark:text-violet-400 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-800' },
 };
 
-const TYPE_OPTIONS = [
-  { value: 'credit', label: 'Credit' },
-  { value: 'debit', label: 'Debit' },
-];
-
-const getTypeColor = (type) =>
-  type === 'credit'
-    ? 'text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800'
-    : 'text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-900/30 border border-red-200 dark:border-red-800';
-
-// ── Component ─────────────────────────────────────────────────────────────────
-export default function Ledger() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const [viewMode, setViewMode] = useState(window.innerWidth < 768 ? 'card' : 'table');
-  useEffect(() => {
-    const h = () => setViewMode(window.innerWidth < 768 ? 'card' : 'table');
-    window.addEventListener('resize', h);
-    return () => window.removeEventListener('resize', h);
-  }, []);
-
-  const { pagination, updatePagination, changeLimit, goToPage } = usePagination(1, 10);
-  const [activeMenuId, setActiveMenuId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState(null);
-  const [entries, setEntries] = useState([]);
-  const [summary, setSummary] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  let activeTab = 'all';
-  if (location.pathname.endsWith('/credits')) activeTab = 'credits';
-  else if (location.pathname.endsWith('/debits')) activeTab = 'debits';
-
-  const handleTabChange = (tabId) => {
-    if (tabId === 'all') navigate('/ledger');
-    else navigate(`/ledger/${tabId}`);
+const getTypeConfig = (type) =>
+  TRANSACTION_TYPE_CONFIG[type?.toLowerCase()] ?? {
+    label: type ?? '—',
+    color: 'text-slate-700 bg-slate-100 dark:text-slate-400 dark:bg-slate-800 border border-slate-200 dark:border-slate-700',
   };
 
-  const tabs = [
-    { id: 'all', label: 'All Entries', icon: List },
-    { id: 'credits', label: 'Credits', icon: TrendingUp },
-    { id: 'debits', label: 'Debits', icon: TrendingDown },
-  ];
+function toIso(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const now = new Date();
+
+const PRESETS = [
+  {
+    label: 'This Month',
+    from: toIso(new Date(now.getFullYear(), now.getMonth(), 1)),
+    to: toIso(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
+  },
+  {
+    label: 'Last Month',
+    from: toIso(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
+    to: toIso(new Date(now.getFullYear(), now.getMonth(), 0)),
+  },
+  {
+    label: 'This Qtr',
+    from: toIso(new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1)),
+    to: toIso(new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 + 3, 0)),
+  },
+  {
+    label: 'This Year',
+    from: `${now.getFullYear()}-01-01`,
+    to: `${now.getFullYear()}-12-31`,
+  },
+];
+
+const DEFAULT_FROM = toIso(new Date(now.getFullYear(), now.getMonth(), 1));
+const DEFAULT_TO = toIso(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+
+const TYPE_OPTIONS = [
+  { value: 'sale', label: 'Sale' },
+  { value: 'receive', label: 'Receive' },
+  { value: 'payment', label: 'Payment' },
+  { value: 'journal', label: 'Journal' },
+];
+
+const OPENING_BALANCE_ROW_ID = 'opening-balance-row';
+
+function formatLedgerDate(date) {
+  if (!date) return '—';
+  const parsed = new Date(`${date}`.includes('T') ? date : `${date}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return '—';
+  const day = String(parsed.getDate()).padStart(2, '0');
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  return `${day}/${month}/${parsed.getFullYear()}`;
+}
+
+// ── component ─────────────────────────────────────────────────────────────────
+
+export default function Ledger() {
+  const { pagination, updatePagination, changeLimit, goToPage } = usePagination(1, 20);
+  const [activeMenuId, setActiveMenuId] = useState(null);
+  const [typeFilter, setTypeFilter] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Generate Invoice modal state
+  const [invoiceModal, setInvoiceModal] = useState(false);
+  const [genInvoiceId, setGenInvoiceId]   = useState('');
+  const [genType, setGenType]             = useState('receive');
+  const [genLoading, setGenLoading]       = useState(false);
+
+  // dateFilter shape: { from_date, to_date, date, month, year }
+  // defaults to current month
+  const [dateFilter, setDateFilter] = useState({
+    from_date: DEFAULT_FROM,
+    to_date: DEFAULT_TO,
+    date: '', month: '', year: '',
+  });
+
+  const hasActiveFilters = typeFilter !== null ||
+    dateFilter.from_date !== DEFAULT_FROM ||
+    dateFilter.to_date !== DEFAULT_TO;
+
+  const [transactions, setTransactions] = useState([]);
+  const [openingBalance, setOpeningBalance] = useState({ debit: 0, credit: 0, balance: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  // Resolved date strings (fall back to current month defaults when cleared)
+  const fromDate = dateFilter.from_date || DEFAULT_FROM;
+  const toDate = dateFilter.to_date || DEFAULT_TO;
+
+  const clearFilters = () => {
+    setDateFilter({ from_date: DEFAULT_FROM, to_date: DEFAULT_TO, date: '', month: '', year: '' });
+    setTypeFilter(null);
+    goToPage(1);
+  };
+
+  // ── fetch ────────────────────────────────────────────────────────────────────
+
+  const fetchTransactions = useCallback(async (isManualRefresh = false) => {
+    if (isManualRefresh) setRefreshing(true);
+    else setIsLoading(true);
+    try {
+      const typeQuery = typeFilter ? `&transaction_type=${typeFilter.value}` : '';
+      const endpoint = `/transaction/list?page_no=${pagination.page}&limit=${pagination.limit}&from_date=${fromDate}&to_date=${toDate}${typeQuery}`;
+      const response = await apiCall(endpoint, 'GET');
+      const data = await response.json();
+      if (response.ok && data.success !== false) {
+        setTransactions(data.data || []);
+        setOpeningBalance(data.opening_balance || { debit: 0, credit: 0, balance: 0 });
+        if (data.pagination) updatePagination({ total: data.pagination.total });
+      } else {
+        setTransactions([]);
+        updatePagination({ total: 0 });
+      }
+    } catch (err) {
+      console.error('Failed to fetch transactions:', err);
+      toast.error('Failed to load transaction ledger');
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.page, pagination.limit, fromDate, toDate, typeFilter]);
 
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      let filtered = [...DUMMY_LEDGER];
-      if (searchQuery) filtered = filtered.filter(e => e.description.toLowerCase().includes(searchQuery.toLowerCase()) || e.firm?.toLowerCase().includes(searchQuery.toLowerCase()));
-      if (typeFilter) filtered = filtered.filter(e => e.type === typeFilter.value);
-      if (activeTab === 'credits') filtered = filtered.filter(e => e.type === 'credit');
-      if (activeTab === 'debits') filtered = filtered.filter(e => e.type === 'debit');
-      setSummary(DUMMY_SUMMARY);
-      updatePagination({ total: filtered.length });
-      const start = (pagination.page - 1) * pagination.limit;
-      setEntries(filtered.slice(start, start + pagination.limit));
-      setIsLoading(false);
-    }, 300);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.page, pagination.limit, searchQuery, typeFilter, activeTab]);
+    const t = setTimeout(() => fetchTransactions(), 300);
+    return () => clearTimeout(t);
+  }, [fetchTransactions]);
+
+  // ── handlers ──────────────────────────────────────────────────────────────────
+
+  const downloadInvoice = async (row) => {
+    const loadingToast = toast.loading('Generating invoice PDF...');
+    try {
+      const response = await apiCall('/transaction/generate-invoice', 'POST', {
+        invoice_id: row.invoice_id,
+        type: row.transaction_type?.toLowerCase(),
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success && resData.data?.url) {
+        toast.success(resData.message || 'Invoice PDF generated successfully', { id: loadingToast });
+        
+        const fileUrl = resData.data.url;
+        const suggestedName = resData.data.suggested_filename || resData.data.filename || 'invoice.pdf';
+        
+        try {
+          const fileRes = await fetch(fileUrl);
+          const blob = await fileRes.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = suggestedName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        } catch (corsErr) {
+          const link = document.createElement('a');
+          link.href = fileUrl;
+          link.target = '_blank';
+          link.download = suggestedName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } else {
+        toast.error(resData.message || 'Failed to generate invoice PDF', { id: loadingToast });
+      }
+    } catch (err) {
+      console.error('Failed to download invoice:', err);
+      toast.error('Failed to download invoice PDF', { id: loadingToast });
+    }
+  };
+
+  const handleViewDetails = (item) => { setSelectedItem(item); setIsModalOpen(true); };
+
+  const handleGenerateInvoice = async (e) => {
+    e.preventDefault();
+    if (!genInvoiceId.trim()) { toast.error('Invoice ID is required'); return; }
+    setGenLoading(true);
+    const loadingToast = toast.loading('Generating invoice PDF...');
+    try {
+      const response = await apiCall('/transaction/generate-invoice', 'POST', {
+        invoice_id: genInvoiceId.trim(),
+        type: genType,
+      });
+      const resData = await response.json();
+      if (response.ok && resData.success && resData.data?.url) {
+        toast.success(resData.message || 'Invoice generated successfully', { id: loadingToast });
+        const fileUrl = resData.data.url;
+        const suggestedName = resData.data.suggested_filename || resData.data.filename || 'invoice.pdf';
+        try {
+          const fileRes = await fetch(fileUrl);
+          const blob = await fileRes.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = suggestedName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        } catch {
+          const link = document.createElement('a');
+          link.href = fileUrl;
+          link.target = '_blank';
+          link.download = suggestedName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+        setInvoiceModal(false);
+        setGenInvoiceId('');
+        setGenType('receive');
+      } else {
+        toast.error(resData.message || 'Failed to generate invoice', { id: loadingToast });
+      }
+    } catch {
+      toast.error('Failed to generate invoice', { id: loadingToast });
+    } finally {
+      setGenLoading(false);
+    }
+  };
+
+  const applyPreset = (preset) => {
+    setDateFilter({ from_date: preset.from, to_date: preset.to, date: '', month: '', year: '' });
+    goToPage(1);
+  };
+
+  const handleDateFilterChange = (val) => {
+    setDateFilter({
+      ...val,
+      from_date: val.from_date || DEFAULT_FROM,
+      to_date: val.to_date || DEFAULT_TO,
+    });
+    goToPage(1);
+  };
+
+  const shiftMonth = (delta) => {
+    // Anchor to the start of the currently visible from-date month
+    const base = new Date(`${fromDate}T00:00:00`);
+    const newM = base.getMonth() + delta;
+    const first = new Date(base.getFullYear(), newM, 1);
+    const last = new Date(base.getFullYear(), newM + 1, 0);
+    setDateFilter({ from_date: toIso(first), to_date: toIso(last), date: '', month: '', year: '' });
+    goToPage(1);
+  };
+
+  // ── table columns ─────────────────────────────────────────────────────────────
 
   const tableColumns = [
-    { key: 'date', label: 'Date', render: (row) => <span className="text-slate-500 dark:text-slate-400">{row.date}</span> },
     {
-      key: 'description', label: 'Description',
+      key: 'transaction_date',
+      label: 'Date',
+      headerClassName: 'w-[140px]',
+      className: 'w-[140px]',
       render: (row) => (
-        <div>
-          <p className="font-medium text-slate-900 dark:text-white">{row.description}</p>
-          {row.firm && <p className="text-xs text-slate-400 mt-0.5">{row.firm}</p>}
-        </div>
-      )
+        row.isOpeningBalance
+          ? <span className="font-bold text-amber-800 dark:text-amber-400">Opening Balance</span>
+          : <span className="text-slate-600 dark:text-slate-400 font-medium">{formatLedgerDate(row.transaction_date)}</span>
+      ),
     },
     {
-      key: 'type', label: 'Type',
+      key: 'invoice_no',
+      label: 'Invoice No.',
+      headerClassName: 'w-[120px]',
+      className: 'w-[120px]',
       render: (row) => (
-        <span className={`px-2 py-1 rounded-md text-[11px] uppercase tracking-wide font-bold ${getTypeColor(row.type)}`}>
-          {row.type}
+        <span className="font-bold text-slate-800 dark:text-gray-100">
+          {row.isOpeningBalance ? '' : (row.invoice_no || '—')}
         </span>
-      )
+      ),
     },
     {
-      key: 'amount', label: 'Amount',
-      render: (row) => (
-        <span className={`font-bold flex items-center gap-0.5 ${row.type === 'credit' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-          {row.type === 'credit' ? '+' : '-'}<IndianRupee size={12} />{row.amount.toLocaleString('en-IN')}
-        </span>
-      )
+      key: 'transaction_type',
+      label: 'Type',
+      headerClassName: 'w-[95px]',
+      className: 'w-[95px]',
+      render: (row) => {
+        if (row.isOpeningBalance) return null;
+        const cfg = getTypeConfig(row.transaction_type);
+        return <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider font-bold ${cfg.color}`}>{cfg.label}</span>;
+      },
     },
     {
-      key: 'balance', label: 'Balance',
-      render: (row) => (
-        <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-0.5">
-          <IndianRupee size={12} />{row.balance.toLocaleString('en-IN')}
-        </span>
-      )
+      key: 'debit',
+      label: 'Debit',
+      headerClassName: 'w-[125px] text-right',
+      className: 'w-[125px] text-right',
+      render: (row) => {
+        const val = row.payment?.debit;
+        return (
+          <span className={`font-semibold tabular-nums ${val ? 'text-blue-600 dark:text-blue-400' : 'text-slate-300 dark:text-slate-600'} ${row.isOpeningBalance ? 'font-bold' : ''}`}>
+            {val ? formatAmount(val) : '—'}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'credit',
+      label: 'Credit',
+      headerClassName: 'w-[125px] text-right',
+      className: 'w-[125px] text-right',
+      render: (row) => {
+        const val = row.payment?.credit;
+        return (
+          <span className={`font-semibold tabular-nums ${val ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-300 dark:text-slate-600'} ${row.isOpeningBalance ? 'font-bold' : ''}`}>
+            {val ? formatAmount(val) : '—'}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'balance',
+      label: 'Balance',
+      headerClassName: 'w-[135px] text-right pr-4 lg:pr-6',
+      className: 'w-[135px] text-right pr-4 lg:pr-6',
+      render: (row) => {
+        const bal = row.payment?.balance ?? 0;
+        return (
+          <span className={`font-bold tabular-nums ${bal >= 0 ? 'text-slate-800 dark:text-gray-100' : 'text-rose-600 dark:text-rose-400'}`}>
+            {formatAmount(bal)}
+          </span>
+        );
+      },
     },
   ];
 
-  const getRowActions = (row) => [
-    ...(row.task_id ? [{ id: 'view', label: 'View Task', icon: <Eye size={14} />, color: 'green', onClick: () => navigate(`/task/${row.task_id}`) }] : []),
-    { id: 'download', label: 'Download', icon: <Download size={14} />, color: 'blue', onClick: () => {} },
+  const ledgerRows = [
+    {
+      transaction_id: OPENING_BALANCE_ROW_ID,
+      isOpeningBalance: true,
+      payment: {
+        debit: openingBalance.debit || 0,
+        credit: openingBalance.credit || 0,
+        balance: openingBalance.balance || 0,
+      },
+    },
+    ...transactions,
   ];
+
+  const getRowActions = (row) => {
+    if (row.isOpeningBalance) return [];
+    const actions = [
+      { id: 'view', label: 'View Details', icon: <Eye size={14} />, color: 'green', onClick: () => handleViewDetails(row) },
+    ];
+    if (row.invoice_id) {
+      actions.push({
+        id: 'download',
+        label: 'Download Invoice',
+        icon: <Download size={14} />,
+        color: 'blue',
+        onClick: () => downloadInvoice(row),
+      });
+    }
+    return actions;
+  };
+
+  // ── render ────────────────────────────────────────────────────────────────────
 
   return (
     <ManagementHub
-      title="Ledger"
-      description="Track all financial credits and debits in one place."
+      title="Transaction Ledger"
+      description="Sales, receipts, payments &amp; journal entries."
       accent="emerald"
-      tabs={tabs}
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
-      onRefresh={() => { setIsLoading(true); setTimeout(() => setIsLoading(false), 400); }}
       actions={
         <button
-          onClick={() => {}}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors"
+          type="button"
+          onClick={() => setInvoiceModal(true)}
+          className="inline-flex items-center justify-center gap-1.5 md:gap-2 rounded-md border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm font-semibold text-emerald-700 dark:text-emerald-400 shadow-sm transition-all duration-200 hover:bg-emerald-100 dark:hover:bg-emerald-900 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Download size={14} /> Export
+          <FileText size={13} />
+          <span className="hidden md:inline whitespace-nowrap">Generate Invoice</span>
         </button>
       }
-      summary={
-        summary && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2">
-            {[
-              { label: 'Opening Balance', value: summary.openingBalance, icon: IndianRupee, color: 'text-slate-600 dark:text-slate-300' },
-              { label: 'Total Credits', value: summary.totalCredit, icon: ArrowUpCircle, color: 'text-emerald-600 dark:text-emerald-400' },
-              { label: 'Total Debits', value: summary.totalDebit, icon: ArrowDownCircle, color: 'text-red-600 dark:text-red-400' },
-              { label: 'Closing Balance', value: summary.closingBalance, icon: IndianRupee, color: 'text-blue-600 dark:text-blue-400' },
-            ].map(({ label, value, icon: Icon, color }) => (
-              <div key={label} className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 px-4 py-3">
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">{label}</p>
-                <p className={`font-bold text-base flex items-center gap-0.5 ${color}`}>
-                  <Icon size={14} />{value.toLocaleString('en-IN')}
-                </p>
-              </div>
-            ))}
-          </div>
-        )
-      }
+      onRefresh={() => fetchTransactions(true)}
+      refreshing={refreshing}
+      refreshLabel="Refresh"
+      refreshTitle="Refresh ledger"
     >
-      <div className="mt-4 flex flex-col gap-2">
-        <ManagementFilters
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          searchValue={searchQuery}
-          onSearchChange={(val) => { setSearchQuery(val); goToPage(1); }}
-          searchPlaceholder="Search entries..."
-          filters={[
-            {
-              value: typeFilter,
-              onChange: (val) => { setTypeFilter(val); goToPage(1); },
-              options: TYPE_OPTIONS,
-              placeholder: 'Type',
-              isClearable: true,
-            },
-          ]}
-        />
+      <div className="mt-4 flex flex-col gap-4">
+        {/* Unified Filters Bar */}
+        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur p-2 sm:p-3 rounded-md border border-slate-200 dark:border-gray-700 flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center shadow-sm">
 
-        {isLoading ? (
-          <PageContentSkeleton viewMode={viewMode} columns={5} rows={6} />
-        ) : entries.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 p-10 text-center flex flex-col items-center">
-            <IndianRupee className="w-10 h-10 text-slate-300 dark:text-slate-600 mb-3" />
-            <p className="text-slate-500 dark:text-slate-400 font-medium">No ledger entries found</p>
+          {/* Row 1 (mobile) / inline (desktop): Date Shifter + Date Picker */}
+          <div className="flex items-center gap-1.5 flex-none">
+            <button
+              type="button"
+              title="Previous month"
+              onClick={() => shiftMonth(-1)}
+              className="h-[34px] sm:h-[42px] px-2.5 rounded-md border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-900 text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-300 dark:hover:border-emerald-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center justify-center shrink-0"
+            >
+              <FaChevronLeft size={10} />
+            </button>
+
+            <div className="flex-1 sm:flex-none sm:min-w-[200px]">
+              <AdvancedDateFilter
+                value={dateFilter}
+                onChange={handleDateFilterChange}
+                placeholder="Date range…"
+                tabOptions={['range']}
+                buttonClassName="h-[34px] sm:h-[42px] rounded-md border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-900 px-3 text-slate-700 dark:text-gray-200 hover:border-emerald-400 dark:hover:border-emerald-600 transition-colors w-full text-xs sm:text-sm font-medium shadow-none flex items-center"
+              />
+            </div>
+
+            <button
+              type="button"
+              title="Next month"
+              onClick={() => shiftMonth(1)}
+              className="h-[34px] sm:h-[42px] px-2.5 rounded-md border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-900 text-slate-500 dark:text-slate-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 hover:border-emerald-300 dark:hover:border-emerald-700 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors flex items-center justify-center shrink-0"
+            >
+              <FaChevronRight size={10} />
+            </button>
           </div>
-        ) : viewMode === 'table' ? (
-          <ManagementTable
-            columns={tableColumns}
-            rows={entries}
-            rowKey="ledger_id"
-            accent="emerald"
-            getActions={getRowActions}
-            activeId={activeMenuId}
-            onToggleAction={(e, id) => setActiveMenuId(id)}
-            onRowClick={() => {}}
-          />
-        ) : (
-          <ManagementGrid viewMode={viewMode}>
-            {entries.map((entry) => (
-              <ManagementCard
-                key={entry.ledger_id}
-                title={entry.description}
-                subtitle={entry.firm || entry.date}
-                accent="emerald"
-                icon={entry.type === 'credit' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                badge={
-                  <span className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-bold ${getTypeColor(entry.type)}`}>
-                    {entry.type}
-                  </span>
-                }
-                actions={getRowActions(entry)}
-                menuId={`menu-${entry.ledger_id}`}
-                activeId={activeMenuId}
-                onToggle={(e, id) => setActiveMenuId(id)}
-                onClick={() => {}}
+
+          {/* Row 2 (mobile) / inline (desktop): Presets + Type Filter + Clear */}
+          <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap sm:flex-1">
+
+            {/* Presets */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              {PRESETS.map((preset) => {
+                const active = dateFilter.from_date === preset.from && dateFilter.to_date === preset.to;
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => applyPreset(preset)}
+                    className={`h-[34px] sm:h-[42px] px-3 rounded-md text-xs font-semibold border transition-all whitespace-nowrap flex items-center ${active
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      : 'bg-slate-50 dark:bg-gray-900 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-gray-700 hover:border-emerald-400 dark:hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400'
+                      }`}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Divider */}
+            <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-gray-700 self-center shrink-0" />
+
+            {/* Transaction Type Filter */}
+            <div className="min-w-[120px] sm:min-w-[140px] flex-1 sm:flex-none">
+              <SelectField
+                value={typeFilter}
+                onChange={(val) => { setTypeFilter(val); goToPage(1); }}
+                options={TYPE_OPTIONS}
+                placeholder="All types"
+                isClearable
+              />
+            </div>
+
+            {/* Clear Filters */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="h-[34px] sm:h-[42px] shrink-0 px-3 rounded-md text-xs font-semibold border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors whitespace-nowrap flex items-center"
               >
-                <div className="mt-3 flex justify-between items-center text-xs">
-                  <span className="text-slate-400">{entry.date}</span>
-                  <span className={`font-bold flex items-center gap-0.5 ${entry.type === 'credit' ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {entry.type === 'credit' ? '+' : '-'}<IndianRupee size={10} />{entry.amount.toLocaleString('en-IN')}
-                  </span>
-                </div>
-                <div className="mt-1 text-xs text-right text-slate-500 dark:text-slate-400 flex items-center justify-end gap-0.5">
-                  Bal: <IndianRupee size={10} />{entry.balance.toLocaleString('en-IN')}
-                </div>
-              </ManagementCard>
-            ))}
-          </ManagementGrid>
+                ✕ Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Active range hint */}
+        {(dateFilter.from_date && dateFilter.to_date) && (
+          <p className="text-xs text-slate-400 dark:text-slate-500 leading-none px-1 -mt-2">
+            Showing transactions from <span className="font-semibold text-slate-600 dark:text-slate-300">{formatLedgerDate(dateFilter.from_date)}</span> to <span className="font-semibold text-slate-600 dark:text-slate-300">{formatLedgerDate(dateFilter.to_date)}</span>
+            {pagination.total > 0 && (
+              <span className="ml-1.5 text-slate-300 dark:text-slate-600">
+                • {pagination.total} transaction{pagination.total !== 1 ? 's' : ''}
+              </span>
+            )}
+          </p>
         )}
 
-        <Pagination
-          currentPage={pagination.page}
-          totalItems={pagination.total}
-          itemsPerPage={pagination.limit}
-          onPageChange={goToPage}
-          onLimitChange={changeLimit}
-        />
+        {isLoading ? (
+          <PageContentSkeleton columns={7} rows={8} />
+        ) : (
+          <>
+            {/* Opening balance + transactions table using standard ManagementTable */}
+            <ManagementTable
+              columns={tableColumns}
+              rows={ledgerRows}
+              rowKey="transaction_id"
+              accent="emerald"
+              compact={false}
+              responsive="scroll"
+              showSerialNo={true}
+              renderSerialNo={(row, index) => {
+                if (row.isOpeningBalance) return '';
+                return <span className="font-semibold text-slate-500 dark:text-slate-400">{index}</span>;
+              }}
+              getActions={getRowActions}
+              activeId={activeMenuId}
+              onToggleAction={(e, id) => setActiveMenuId(id)}
+              rowClassName={(row) => row.isOpeningBalance ? 'bg-amber-50/40 dark:bg-amber-950/10 hover:bg-amber-50/50 dark:hover:bg-amber-950/20' : ''}
+              onRowClick={(row) => !row.isOpeningBalance && handleViewDetails(row)}
+            />
+
+            {/* Empty state when no transactions (opening balance row still shows above) */}
+            {transactions.length === 0 && (
+              <div className="mt-3 bg-white dark:bg-gray-800 rounded-md border border-slate-200 dark:border-gray-700 p-8 text-center flex flex-col items-center justify-center shadow-sm">
+                <ArrowRightLeft className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-2" />
+                <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">No transactions found for this period</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Adjust date filters or clear the type filter to see results.</p>
+              </div>
+            )}
+
+            {/* Pagination — only show when there are actual transactions */}
+            {pagination.total > 0 && (
+              <Pagination
+                currentPage={pagination.page}
+                totalItems={pagination.total}
+                itemsPerPage={pagination.limit}
+                onPageChange={goToPage}
+                onLimitChange={changeLimit}
+              />
+            )}
+          </>
+        )}
       </div>
+
+      {/* ── Modal ───────────────────────────────────────────────────────────── */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Transaction Details"
+        icon={Receipt}
+        size="3xl"
+        footer={
+          selectedItem?.invoice_id ? (
+            <button
+              type="button"
+              onClick={() => downloadInvoice(selectedItem)}
+              className="flex items-center gap-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 shadow-sm transition-colors text-sm"
+            >
+              <Download size={15} />
+              Download Invoice PDF
+            </button>
+          ) : null
+        }
+      >
+        {selectedItem && (
+          <div className="space-y-3 text-sm text-slate-700 dark:text-gray-300">
+            {/* Header row */}
+            <div className="flex justify-between items-start pb-3 border-b border-gray-100 dark:border-gray-700">
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Invoice</p>
+                <p className="text-base font-bold text-slate-900 dark:text-white leading-tight">{selectedItem.invoice_no || '—'}</p>
+                <p className="text-[10px] text-slate-400 font-mono mt-0.5 break-all">{selectedItem.transaction_id}</p>
+              </div>
+              <span className={`shrink-0 ml-3 mt-0.5 px-2.5 py-1 rounded-md text-xs font-bold ${getTypeConfig(selectedItem.transaction_type).color}`}>
+                {getTypeConfig(selectedItem.transaction_type).label}
+              </span>
+            </div>
+
+            {/* Meta grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Date</p>
+                <p className="font-semibold text-slate-800 dark:text-gray-200">{formatLedgerDate(selectedItem.transaction_date)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Invoice ID</p>
+                <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 break-all">{selectedItem.invoice_id || '—'}</p>
+              </div>
+            </div>
+
+            {/* Payment breakdown */}
+            <div className="bg-slate-50 dark:bg-gray-900/60 rounded-md border border-slate-100 dark:border-gray-800 divide-y divide-slate-100 dark:divide-gray-800 overflow-hidden">
+              {[
+                { icon: <TrendingUp size={12} className="text-blue-500" />, label: 'Debit', val: formatAmount(selectedItem.payment?.debit ?? 0), cls: 'text-blue-700 dark:text-blue-400 font-semibold' },
+                { icon: <TrendingDown size={12} className="text-emerald-500" />, label: 'Credit', val: formatAmount(selectedItem.payment?.credit ?? 0), cls: 'text-emerald-700 dark:text-emerald-400 font-semibold' },
+                { icon: <Wallet size={12} className="text-amber-500" />, label: 'Running Balance', val: formatAmount(selectedItem.payment?.balance ?? 0), cls: `font-extrabold ${(selectedItem.payment?.balance ?? 0) >= 0 ? 'text-slate-900 dark:text-white' : 'text-rose-600 dark:text-rose-400'}` },
+              ].map(({ icon, label, val, cls }) => (
+                <div key={label} className="flex justify-between items-center px-3 py-2">
+                  <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">{icon} {label}</span>
+                  <span className={`tabular-nums ${cls}`}>{val}</span>
+                </div>
+              ))}
+            </div>
+
+
+          </div>
+        )}
+      </Modal>
+
+      {/* ── Generate Invoice Modal ───────────────────────────────────────── */}
+      <Modal
+        isOpen={invoiceModal}
+        onClose={() => { setInvoiceModal(false); setGenInvoiceId(''); setGenType('receive'); }}
+        title="Generate Invoice"
+        icon={FileText}
+        size="md"
+        footer={
+          <button
+            type="submit"
+            form="gen-invoice-form"
+            disabled={genLoading}
+            className="flex items-center gap-2 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 shadow-sm transition-colors text-sm"
+          >
+            <Download size={14} />
+            {genLoading ? 'Generating…' : 'Generate & Download'}
+          </button>
+        }
+      >
+        <form id="gen-invoice-form" onSubmit={handleGenerateInvoice} className="space-y-4">
+          {/* Invoice ID */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              Invoice ID <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={genInvoiceId}
+              onChange={(e) => setGenInvoiceId(e.target.value)}
+              placeholder="e.g. 3zw08476mgm180va78d1px23…"
+              required
+              className="w-full rounded-md border border-slate-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-900 text-slate-800 dark:text-gray-200 px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-gray-600"
+            />
+          </div>
+
+          {/* Type */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+              Transaction Type <span className="text-rose-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {['sale', 'receive', 'payment', 'journal'].map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setGenType(t)}
+                  className={`py-2 px-3 rounded-md border text-xs font-semibold capitalize transition-all ${
+                    genType === t
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      : 'bg-slate-50 dark:bg-gray-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-gray-700 hover:border-emerald-400 dark:hover:border-emerald-700 hover:text-emerald-700 dark:hover:text-emerald-400'
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </form>
+      </Modal>
     </ManagementHub>
   );
 }

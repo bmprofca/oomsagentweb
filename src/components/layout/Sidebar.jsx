@@ -1,21 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   House,
-  Users,
-  ConciergeBell,
   LifeBuoy,
   Briefcase,
-  ClipboardList,
   FileBox,
-  BrickWall,
   IndianRupee,
-  Receipt,
-  FileClock,
-  MessageSquare,
-  Bell,
 } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
-import { label } from 'framer-motion/client';
 
 const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -34,7 +25,18 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
       icon: FileBox,
       label: 'Tasks',
       path: '/task',
-    },{
+    },
+    {
+      icon: Briefcase,
+      label: 'Services',
+      path: '/services',
+    },
+    {
+      icon:IndianRupee,
+      label:'Ledger',
+      path:'/ledger'
+    },
+    {
       icon:LifeBuoy,
       label:'Help & Support',
       path:'/support'

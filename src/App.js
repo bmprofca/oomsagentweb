@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Ledger from "./pages/Ledger";
 import Support from "./pages/Support";
 import Task from "./pages/Tasks";
+import Services from "./pages/Services";
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
                   <Route path="/task" element={<Task />} />
                   <Route path="/task/ongoing" element={<Task />} />
                   <Route path="/task/completed" element={<Task />} />
+                  <Route path="/services" element={<Services />} />
                 </Route>
               </Route>
 
