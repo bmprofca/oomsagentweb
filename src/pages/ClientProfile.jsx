@@ -12,10 +12,10 @@ import Modal from '../components/common/Modal';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  active:         { label: 'Active',        badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800', dot: 'bg-emerald-500' },
-  inactive:       { label: 'Inactive',      badge: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700', dot: 'bg-slate-400' },
-  'under review': { label: 'Under Review',  badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800', dot: 'bg-amber-500' },
-  suspended:      { label: 'Suspended',     badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800', dot: 'bg-rose-500' },
+  active: { label: 'Active', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800', dot: 'bg-emerald-500' },
+  inactive: { label: 'Inactive', badge: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700', dot: 'bg-slate-400' },
+  'under review': { label: 'Under Review', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800', dot: 'bg-amber-500' },
+  suspended: { label: 'Suspended', badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800', dot: 'bg-rose-500' },
 };
 const getStatus = (s) => {
   const key = (s || '').toLowerCase().trim();
@@ -23,12 +23,12 @@ const getStatus = (s) => {
 };
 
 const FIRM_TYPE_BADGE = {
-  llp:               'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800',
-  proprietorship:    'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
-  partnership:       'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
+  llp: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800',
+  proprietorship: 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
+  partnership: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
   'private limited': 'bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
-  individual:        'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 border border-sky-200 dark:border-sky-800',
-  company:           'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border border-violet-200 dark:border-violet-800',
+  individual: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 border border-sky-200 dark:border-sky-800',
+  company: 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border border-violet-200 dark:border-violet-800',
 };
 const getFirmBadge = (t) => FIRM_TYPE_BADGE[(t || '').toLowerCase()] || 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
 
@@ -55,7 +55,7 @@ function InfoRow({ icon: Icon, label, value, mono }) {
 // ── Section card ───────────────────────────────────────────────────────────────
 function Section({ title, children, action }) {
   return (
-    <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm overflow-hidden">
+    <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between">
         <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{title}</h3>
         {action}
@@ -69,7 +69,7 @@ function Section({ title, children, action }) {
 function FirmCard({ firm, canEdit, onEdit, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <div className="relative bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-4 hover:border-sky-300 dark:hover:border-sky-700 transition-colors">
+    <div className="relative bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-4 hover:border-sky-300 dark:hover:border-sky-700 transition-colors">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -160,9 +160,9 @@ function FirmCard({ firm, canEdit, onEdit, onDelete }) {
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 const TABS = [
-  { id: 'profile',  label: 'Profile',           icon: User },
-  { id: 'contact',  label: 'Contact & Address',  icon: MapPin },
-  { id: 'business', label: 'Business Details',   icon: Building2 },
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'contact', label: 'Contact & Address', icon: MapPin },
+  { id: 'business', label: 'Business Details', icon: Building2 },
 ];
 
 // ── Edit Profile Modal ─────────────────────────────────────────────────────────
@@ -320,23 +320,23 @@ export default function ClientProfile() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('profile');
-  const [client, setClient]       = useState(null);
-  const [loading, setLoading]     = useState(true);
+  const [client, setClient] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [firms, setFirms]           = useState([]);
+  const [firms, setFirms] = useState([]);
   const [firmsLoading, setFirmsLoading] = useState(false);
   const [firmsTotal, setFirmsTotal] = useState(0);
 
-  const [editOpen, setEditOpen]         = useState(false);
-  const [deleteOpen, setDeleteOpen]     = useState(false);
-  const [editFirm, setEditFirm]         = useState(null);
-  const [deleteFirm, setDeleteFirm]     = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editFirm, setEditFirm] = useState(null);
+  const [deleteFirm, setDeleteFirm] = useState(null);
 
   const fetchClient = useCallback(async () => {
     setLoading(true);
     try {
       const res = await apiCall(`/client/details/${username}`, 'GET');
-      const d   = await res.json();
+      const d = await res.json();
       if (res.ok && d.success !== false) {
         setClient(d.data);
       } else {
@@ -353,7 +353,7 @@ export default function ClientProfile() {
     setFirmsLoading(true);
     try {
       const res = await apiCall(`/client/details/${username}/firms?page_no=1&limit=20`, 'GET');
-      const d   = await res.json();
+      const d = await res.json();
       if (res.ok && d.success !== false) {
         setFirms(d.data || []);
         setFirmsTotal(d.pagination?.total ?? 0);
@@ -375,7 +375,7 @@ export default function ClientProfile() {
   const handleDeleteClient = async () => {
     try {
       const res = await apiCall(`/client/${username}`, 'DELETE');
-      const d   = await res.json();
+      const d = await res.json();
       if (res.ok && d.success !== false) {
         toast.success('Client deleted');
         navigate('/clients');
@@ -391,7 +391,7 @@ export default function ClientProfile() {
     if (!deleteFirm) return;
     try {
       const res = await apiCall(`/firms/${deleteFirm.firm_id}`, 'DELETE');
-      const d   = await res.json();
+      const d = await res.json();
       if (res.ok && d.success !== false) {
         toast.success('Firm deleted');
         setDeleteFirm(null);
@@ -416,7 +416,7 @@ export default function ClientProfile() {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => <Pulse key={i} h="h-24" rounded="rounded-3xl" />)}
+          {[...Array(4)].map((_, i) => <Pulse key={i} h="h-24" rounded="rounded-sm" />)}
         </div>
       </div>
     );
@@ -434,8 +434,8 @@ export default function ClientProfile() {
   const { label: statusLabel, badge: statusBadge, dot: statusDot } = getStatus(client.status);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800/80">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div>
+      <div className="mx-auto space-y-2">
 
         {/* ── Back + Header ── */}
         <div className="flex items-start justify-between gap-4">
@@ -466,13 +466,13 @@ export default function ClientProfile() {
         </div>
 
         {/* ── Hero card ── */}
-        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-6">
+        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-6">
           <div className="flex items-start gap-5">
             <div className="relative shrink-0">
               {profile?.image ? (
-                <img src={profile.image} alt={profile.full_name} className="w-20 h-20 rounded-2xl object-cover border-2 border-slate-200 dark:border-slate-700 shadow-sm" />
+                <img src={profile.image} alt={profile.full_name} className="w-20 h-20 rounded-sm object-cover border-2 border-slate-200 dark:border-slate-700 shadow-sm" />
               ) : (
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-200 dark:from-sky-900/50 dark:to-sky-800/50 flex items-center justify-center border-2 border-sky-200 dark:border-sky-800 shadow-sm">
+                <div className="w-20 h-20 rounded-sm bg-gradient-to-br from-sky-100 to-sky-200 dark:from-sky-900/50 dark:to-sky-800/50 flex items-center justify-center border-2 border-sky-200 dark:border-sky-800 shadow-sm">
                   <span className="text-2xl font-black text-sky-600 dark:text-sky-400">
                     {(profile?.full_name || '?')[0].toUpperCase()}
                   </span>
@@ -512,16 +512,15 @@ export default function ClientProfile() {
         </div>
 
         {/* ── Tabs ── */}
-        <div className="flex gap-1 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-200/60 dark:border-slate-700/60 p-1.5 shadow-sm">
+        <div className="flex gap-1 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 p-1.5 shadow-sm">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === id
-                  ? 'bg-sky-500 text-white shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === id
+                ? 'bg-sky-500 text-white shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 hover:text-slate-700 dark:hover:text-slate-200'
+                }`}
             >
               <Icon size={13} />
               <span className="hidden sm:inline">{label}</span>
@@ -533,17 +532,17 @@ export default function ClientProfile() {
         {activeTab === 'profile' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Section title="Personal Details">
-              <InfoRow icon={User}      label="Full Name"     value={profile?.full_name} />
-              <InfoRow icon={FileText}  label="PAN"           value={profile?.pan} mono />
-              <InfoRow icon={User}      label="Care Of"       value={profile?.care_of} />
-              <InfoRow icon={User}      label="Guardian"      value={profile?.guardian_name} />
-              <InfoRow icon={Calendar}  label="Date of Birth" value={profile?.date_of_birth} />
-              <InfoRow icon={User}      label="Gender"        value={profile?.gender ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1) : null} />
+              <InfoRow icon={User} label="Full Name" value={profile?.full_name} />
+              <InfoRow icon={FileText} label="PAN" value={profile?.pan} mono />
+              <InfoRow icon={User} label="Care Of" value={profile?.care_of} />
+              <InfoRow icon={User} label="Guardian" value={profile?.guardian_name} />
+              <InfoRow icon={Calendar} label="Date of Birth" value={profile?.date_of_birth} />
+              <InfoRow icon={User} label="Gender" value={profile?.gender ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1) : null} />
             </Section>
             <Section title="Account Info">
-              <InfoRow icon={Hash}      label="Username"    value={client.username} mono />
-              <InfoRow icon={Shield}    label="Branch ID"   value={client.branch_id} mono />
-              <InfoRow icon={Clock}     label="Created"     value={client.create_date} />
+              <InfoRow icon={Hash} label="Username" value={client.username} mono />
+              <InfoRow icon={Shield} label="Branch ID" value={client.branch_id} mono />
+              <InfoRow icon={Clock} label="Created" value={client.create_date} />
               <div className="py-3 border-b border-slate-100 dark:border-slate-700/50 last:border-0">
                 <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Status</p>
                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm ${statusBadge}`}>
@@ -563,16 +562,16 @@ export default function ClientProfile() {
         {activeTab === 'contact' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Section title="Contact Information">
-              <InfoRow icon={Phone} label="Mobile"       value={profile?.mobile ? `+${profile.country_code || '91'} ${profile.mobile}` : null} />
-              <InfoRow icon={Mail}  label="Email"        value={profile?.email} />
+              <InfoRow icon={Phone} label="Mobile" value={profile?.mobile ? `+${profile.country_code || '91'} ${profile.mobile}` : null} />
+              <InfoRow icon={Mail} label="Email" value={profile?.email} />
             </Section>
             <Section title="Residential Address">
               {address ? (
                 <>
-                  <InfoRow icon={MapPin} label="State"         value={address.state} />
-                  <InfoRow icon={MapPin} label="District"       value={address.district} />
+                  <InfoRow icon={MapPin} label="State" value={address.state} />
+                  <InfoRow icon={MapPin} label="District" value={address.district} />
                   <InfoRow icon={MapPin} label="Town / Village" value={address.town_or_village} />
-                  <InfoRow icon={Hash}   label="Pincode"        value={address.pincode} mono />
+                  <InfoRow icon={Hash} label="Pincode" value={address.pincode} mono />
                   {address.address_line_1 && <InfoRow icon={MapPin} label="Address Line 1" value={address.address_line_1} />}
                   {address.address_line_2 && <InfoRow icon={MapPin} label="Address Line 2" value={address.address_line_2} />}
                 </>
@@ -603,10 +602,10 @@ export default function ClientProfile() {
 
             {firmsLoading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[...Array(3)].map((_, i) => <Pulse key={i} h="h-48" rounded="rounded-2xl" />)}
+                {[...Array(3)].map((_, i) => <Pulse key={i} h="h-48" rounded="rounded-sm" />)}
               </div>
             ) : firms.length === 0 ? (
-              <div className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
+              <div className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
                 <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full">
                   <Building2 size={40} className="text-slate-300 dark:text-slate-600" />
                 </div>
@@ -687,7 +686,7 @@ function EditFirmModal({ firm, onClose, onSaved }) {
         ? { type: form.type, pan: form.pan }
         : { type: form.type, pan: form.pan, firm: form.firm, gst: form.gst, tan: form.tan, vat: form.vat, cin: form.cin, address: form.address };
       const res = await apiCall(`/client/details/firms/${firm.firm_id}`, 'PUT', payload);
-      const d   = await res.json();
+      const d = await res.json();
       if (res.ok && d.success !== false) {
         toast.success('Firm updated');
         onSaved();

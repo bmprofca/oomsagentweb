@@ -68,7 +68,7 @@ export default function Profile() {
         {/* ── LEFT SIDEBAR ── */}
         <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">
           {/* Profile card */}
-          <div className="bg-white/60 dark:bg-slate-800/60 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-xl overflow-hidden w-full">
+          <div className="bg-white/60 dark:bg-slate-800/60 rounded-sm shadow-sm border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-xl overflow-hidden w-full">
             {/* Cover strip */}
             <div className="h-24 bg-gradient-to-r from-blue-600 to-indigo-600 w-full relative">
               <div className="absolute inset-0 bg-white/10 dark:bg-black/10" />
@@ -76,8 +76,8 @@ export default function Profile() {
 
             {/* Avatar + info */}
             <div className="flex flex-col items-center px-6 pb-6 -mt-12 relative z-10">
-              <div className="relative w-24 h-24 rounded-2xl ring-4 ring-white dark:ring-slate-900 shadow-xl mb-4 bg-white dark:bg-slate-800">
-                <div className="w-full h-full rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 overflow-hidden flex items-center justify-center">
+              <div className="relative w-24 h-24 rounded-sm ring-4 ring-white dark:ring-slate-900 shadow-xl mb-4 bg-white dark:bg-slate-800">
+                <div className="w-full h-full rounded-sm bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 overflow-hidden flex items-center justify-center">
                   <span className="text-4xl font-bold text-blue-600 dark:text-blue-400">
                     {profile.name.charAt(0)}
                   </span>
@@ -86,7 +86,7 @@ export default function Profile() {
 
               <h2 className="text-xl font-black text-slate-900 dark:text-white text-center leading-tight tracking-tight">{profile.name}</h2>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400 text-center mt-1 truncate w-full">{profile.email}</p>
-              
+
               <span className="mt-3 inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 shadow-sm border border-blue-200 dark:border-blue-800/60">
                 Agent
               </span>
@@ -118,7 +118,7 @@ export default function Profile() {
         <div className="flex-1 min-w-0 flex flex-col gap-6 w-full">
 
           {/* Personal Details */}
-          <div className="bg-white/60 dark:bg-slate-800/60 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-xl overflow-hidden w-full">
+          <div className="bg-white/60 dark:bg-slate-800/60 rounded-sm shadow-sm border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-xl overflow-hidden w-full">
             <SectionHeader icon={User} title="Agent Information" />
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
@@ -141,7 +141,7 @@ export default function Profile() {
           </div>
 
           {/* Branch Details */}
-          <div className="bg-white/60 dark:bg-slate-800/60 rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-xl overflow-hidden w-full">
+          <div className="bg-white/60 dark:bg-slate-800/60 rounded-sm shadow-sm border border-slate-200/60 dark:border-slate-700/60 backdrop-blur-xl overflow-hidden w-full">
             <SectionHeader icon={Building2} title="Branch Details" />
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>

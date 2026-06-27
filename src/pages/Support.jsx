@@ -175,7 +175,7 @@ export default function Support() {
         // Modern skeleton loading
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-8 animate-pulse">
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-96">
+            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-sm shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-96">
               <div className="h-5 w-1/4 bg-slate-200 dark:bg-slate-800 rounded-full mb-6"></div>
               <div className="h-10 w-full bg-slate-100 dark:bg-slate-800 rounded-xl mb-6"></div>
               <div className="h-3 w-3/4 bg-slate-100 dark:bg-slate-800 rounded-full mb-3"></div>
@@ -183,12 +183,12 @@ export default function Support() {
             </div>
           </div>
           <div className="space-y-6 md:space-y-8">
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-80">
+            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-sm shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-80">
               <div className="h-5 w-1/2 bg-slate-200 dark:bg-slate-800 rounded-full mb-6"></div>
-              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-4"></div>
-              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl"></div>
+              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-sm mb-4"></div>
+              <div className="h-16 bg-slate-100 dark:bg-slate-800 rounded-sm"></div>
             </div>
-            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-44">
+            <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl rounded-sm shadow-sm border border-slate-100 dark:border-slate-800 p-5 md:p-8 h-44">
               <div className="h-5 w-1/2 bg-slate-200 dark:bg-slate-800 rounded-full mb-4"></div>
               <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full"></div>
             </div>
@@ -201,7 +201,7 @@ export default function Support() {
           <div className="lg:col-span-2 space-y-6 md:space-y-8">
 
             {/* FAQ Search and Accordions */}
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-sm shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
               <div className="p-5 md:p-8 border-b border-slate-100 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white/40 dark:from-slate-800/40 dark:to-slate-900/80">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div>
@@ -223,7 +223,7 @@ export default function Support() {
                       placeholder="Search FAQs..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-12 pr-5 py-3 text-sm font-medium rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
+                      className="w-full pl-12 pr-5 py-3 text-sm font-medium rounded-sm border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
                     />
                     <Search size={16} className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 transition-colors" />
                   </div>
@@ -285,7 +285,7 @@ export default function Support() {
           <div className="space-y-8">
 
             {/* Direct Contact Cards */}
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-sm shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
               <div className="p-5 md:p-8 border-b border-slate-100 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white/40 dark:from-slate-800/40 dark:to-slate-900/80">
                 <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3 tracking-tight">
                   <span className="p-2 bg-blue-500 rounded-xl shadow-lg shadow-blue-500/30 text-white">
@@ -395,7 +395,7 @@ export default function Support() {
             </div>
 
             {/* Support Hours Card */}
-            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
+            <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-sm shadow-sm border border-slate-200/60 dark:border-slate-700/60 overflow-hidden transition-all hover:shadow-md">
               <div className="p-5 md:p-8 border-b border-slate-100 dark:border-slate-800/60 bg-gradient-to-br from-slate-50/80 to-white/40 dark:from-slate-800/40 dark:to-slate-900/80">
                 <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3 tracking-tight">
                   <span className="p-2 bg-blue-500 rounded-xl shadow-lg shadow-blue-500/30 text-white">

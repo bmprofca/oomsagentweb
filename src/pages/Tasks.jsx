@@ -16,14 +16,14 @@ import PaginationComponent from '../components/common/PaginationComponent';
 
 // ── Status helpers ─────────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  'in process':              { label: 'In Process',  badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800' },
-  'complete':                { label: 'Complete',    badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' },
-  'completed':               { label: 'Completed',   badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' },
+  'in process': { label: 'In Process', badge: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800' },
+  'complete': { label: 'Complete', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' },
+  'completed': { label: 'Completed', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' },
   'pending from department': { label: 'Dept. Pending', badge: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border border-orange-200 dark:border-orange-800' },
-  'pending from client':     { label: 'Client Pending', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800' },
-  'pending':                 { label: 'Pending',     badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800' },
-  'uploaded':                { label: 'Uploaded',    badge: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 border border-violet-200 dark:border-violet-800' },
-  'cancel':                  { label: 'Cancelled',   badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800' },
+  'pending from client': { label: 'Client Pending', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800' },
+  'pending': { label: 'Pending', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800' },
+  'uploaded': { label: 'Uploaded', badge: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 border border-violet-200 dark:border-violet-800' },
+  'cancel': { label: 'Cancelled', badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800' },
 };
 
 const getStatus = (s) => {
@@ -32,9 +32,9 @@ const getStatus = (s) => {
 };
 
 const FIRM_TYPE_BADGE = {
-  llp:               'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800',
-  proprietorship:    'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
-  partnership:       'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
+  llp: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800',
+  proprietorship: 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
+  partnership: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
   'private limited': 'bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
 };
 const getFirmBadge = (t) => FIRM_TYPE_BADGE[(t || '').toLowerCase()] || 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
@@ -43,19 +43,19 @@ const fmt = (n) => Number(n || 0).toLocaleString('en-IN');
 
 // ── Status filter options ─────────────────────────────────────────────────────
 const STATUS_OPTIONS = [
-  { value: '',                        label: 'All Status' },
-  { value: 'in process',              label: 'In Process' },
+  { value: '', label: 'All Status' },
+  { value: 'in process', label: 'In Process' },
   { value: 'pending from department', label: 'Dept. Pending' },
-  { value: 'pending from client',     label: 'Client Pending' },
-  { value: 'complete',                label: 'Complete' },
-  { value: 'uploaded',                label: 'Uploaded' },
-  { value: 'cancel',                  label: 'Cancelled' },
+  { value: 'pending from client', label: 'Client Pending' },
+  { value: 'complete', label: 'Complete' },
+  { value: 'uploaded', label: 'Uploaded' },
+  { value: 'cancel', label: 'Cancelled' },
 ];
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 const TABS = [
-  { id: 'all',       label: 'All Tasks', icon: List },
-  { id: 'ongoing',   label: 'Ongoing',   icon: Activity },
+  { id: 'all', label: 'All Tasks', icon: List },
+  { id: 'ongoing', label: 'Ongoing', icon: Activity },
   { id: 'completed', label: 'Completed', icon: CheckCircle },
 ];
 
@@ -66,7 +66,7 @@ function Pulse({ h = 'h-4', w = 'w-full', rounded = 'rounded' }) {
 
 function TableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl shadow-sm">
+    <div className="overflow-hidden rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -97,7 +97,7 @@ function CardSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-5 flex flex-col gap-4 shadow-sm">
+        <div key={i} className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-5 flex flex-col gap-4 shadow-sm">
           <Pulse h="h-5" w="w-3/4" rounded="rounded-full" />
           <Pulse h="h-4" w="w-1/2" rounded="rounded-full" />
           <div className="flex justify-between mt-2">
@@ -182,23 +182,23 @@ export default function Task() {
 
   // Tab from URL
   let activeTab = 'all';
-  if (location.pathname.endsWith('/ongoing'))   activeTab = 'ongoing';
+  if (location.pathname.endsWith('/ongoing')) activeTab = 'ongoing';
   else if (location.pathname.endsWith('/completed')) activeTab = 'completed';
 
-  const [page, setPage]       = useState(1);
-  const [limit, setLimit]     = useState(20);
-  const [total, setTotal]     = useState(0);
-  const [search, setSearch]   = useState('');
-  const [status, setStatus]   = useState('');
-  const [tasks, setTasks]     = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState(null);
 
   // Sync status filter when tab changes
   useEffect(() => {
-    if (activeTab === 'ongoing')        setStatus('in process');
+    if (activeTab === 'ongoing') setStatus('in process');
     else if (activeTab === 'completed') setStatus('complete');
-    else                                setStatus('');
+    else setStatus('');
     setPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
@@ -212,7 +212,7 @@ export default function Task() {
         status,
         search,
       });
-      const res  = await apiCall(`/task/list?${qs}`, 'GET');
+      const res = await apiCall(`/task/list?${qs}`, 'GET');
       const data = await res.json();
       if (res.ok && data.success !== false) {
         setTasks(data.data || []);
@@ -235,9 +235,9 @@ export default function Task() {
   }, [fetchTasks]);
 
   const handleTab = (id) => {
-    if (id === 'all')             navigate('/task');
-    else if (id === 'ongoing')    navigate('/task/ongoing');
-    else if (id === 'completed')  navigate('/task/completed');
+    if (id === 'all') navigate('/task');
+    else if (id === 'ongoing') navigate('/task/ongoing');
+    else if (id === 'completed') navigate('/task/completed');
   };
 
   const statusOptions = STATUS_OPTIONS.map(o => ({ value: o.value, label: o.label }));
@@ -354,49 +354,49 @@ export default function Task() {
 
 
 
-      {/* Content */}
-      {loading ? (
-        viewMode === 'table' ? <TableSkeleton /> : <CardSkeleton />
-      ) : tasks.length === 0 ? (
-        <div className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
-          <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full">
-            <CheckSquare size={48} className="text-slate-300 dark:text-slate-600" />
+        {/* Content */}
+        {loading ? (
+          viewMode === 'table' ? <TableSkeleton /> : <CardSkeleton />
+        ) : tasks.length === 0 ? (
+          <div className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
+            <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full">
+              <CheckSquare size={48} className="text-slate-300 dark:text-slate-600" />
+            </div>
+            <p className="text-lg text-slate-600 dark:text-slate-400 font-bold">No tasks found</p>
+            <p className="text-slate-500 dark:text-slate-500 text-sm font-medium">Try adjusting your search or filters</p>
           </div>
-          <p className="text-lg text-slate-600 dark:text-slate-400 font-bold">No tasks found</p>
-          <p className="text-slate-500 dark:text-slate-500 text-sm font-medium">Try adjusting your search or filters</p>
-        </div>
-      ) : viewMode === 'table' ? (
-        /* ── Table view ── */
-        <ManagementTable
-          rows={tasks}
-          columns={tableColumns}
-          rowKey="task_id"
-          getActions={getTableActions}
-          onRowClick={(row) => setSelectedTask(row)}
-          accent="amber"
-          showSerialNo={true}
-        />
-      ) : (
-        /* ── Card view ── */
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {tasks.map((task) => (
-            <TaskCard
-              key={task.task_id}
-              task={task}
-              onClick={() => setSelectedTask(task)}
-            />
-          ))}
-        </div>
-      )}
+        ) : viewMode === 'table' ? (
+          /* ── Table view ── */
+          <ManagementTable
+            rows={tasks}
+            columns={tableColumns}
+            rowKey="task_id"
+            getActions={getTableActions}
+            onRowClick={(row) => setSelectedTask(row)}
+            accent="amber"
+            showSerialNo={true}
+          />
+        ) : (
+          /* ── Card view ── */
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {tasks.map((task) => (
+              <TaskCard
+                key={task.task_id}
+                task={task}
+                onClick={() => setSelectedTask(task)}
+              />
+            ))}
+          </div>
+        )}
 
-      {/* Pagination */}
-      <PaginationComponent
-        currentPage={page}
-        totalItems={total}
-        itemsPerPage={limit}
-        onPageChange={(p) => setPage(p)}
-        onLimitChange={(l) => { setLimit(l); setPage(1); }}
-      />
+        {/* Pagination */}
+        <PaginationComponent
+          currentPage={page}
+          totalItems={total}
+          itemsPerPage={limit}
+          onPageChange={(p) => setPage(p)}
+          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+        />
       </div>
 
       {/* Task Details Modal */}
@@ -421,7 +421,7 @@ export default function Task() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Client Info</p>
                 <p className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <User size={14} className="text-slate-400" />
@@ -432,7 +432,7 @@ export default function Task() {
                 )}
               </div>
 
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Firm Details</p>
                 <p className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <Building2 size={14} className="text-slate-400" />
@@ -445,7 +445,7 @@ export default function Task() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Financials</p>
                 <p className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-1">
                   <IndianRupee size={16} className="text-slate-400" />
@@ -456,7 +456,7 @@ export default function Task() {
                 </p>
               </div>
 
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Timeline</p>
                 <p className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <Clock size={14} className={selectedTask.dates?.due_date ? 'text-amber-500' : 'text-slate-400'} />

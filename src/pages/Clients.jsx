@@ -14,10 +14,10 @@ import PaginationComponent from '../components/common/PaginationComponent';
 
 // ── Status helpers ─────────────────────────────────────────────────────────────
 const STATUS_MAP = {
-  active:         { label: 'Active',        badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' },
-  inactive:       { label: 'Inactive',      badge: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700' },
-  'under review': { label: 'Under Review',  badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800' },
-  suspended:      { label: 'Suspended',     badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800' },
+  active: { label: 'Active', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' },
+  inactive: { label: 'Inactive', badge: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700' },
+  'under review': { label: 'Under Review', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800' },
+  suspended: { label: 'Suspended', badge: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800' },
 };
 
 const getStatus = (s) => {
@@ -26,18 +26,18 @@ const getStatus = (s) => {
 };
 
 const GENDER_BADGE = {
-  male:   'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800',
+  male: 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800',
   female: 'bg-pink-50 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300 border border-pink-200 dark:border-pink-800',
-  other:  'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
+  other: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
 };
 const getGenderBadge = (g) => GENDER_BADGE[(g || '').toLowerCase()] || 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
 
 const STATUS_OPTIONS = [
-  { value: '',              label: 'All Status' },
-  { value: 'active',        label: 'Active' },
-  { value: 'under review',  label: 'Under Review' },
-  { value: 'inactive',      label: 'Inactive' },
-  { value: 'suspended',     label: 'Suspended' },
+  { value: '', label: 'All Status' },
+  { value: 'active', label: 'Active' },
+  { value: 'under review', label: 'Under Review' },
+  { value: 'inactive', label: 'Inactive' },
+  { value: 'suspended', label: 'Suspended' },
 ];
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -47,7 +47,7 @@ function Pulse({ h = 'h-4', w = 'w-full', rounded = 'rounded' }) {
 
 function TableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl shadow-sm">
+    <div className="overflow-hidden rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -78,7 +78,7 @@ function CardSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-5 flex flex-col gap-4 shadow-sm">
+        <div key={i} className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-5 flex flex-col gap-4 shadow-sm">
           <Pulse h="h-5" w="w-3/4" rounded="rounded-full" />
           <Pulse h="h-4" w="w-1/2" rounded="rounded-full" />
           <div className="flex justify-between mt-2">
@@ -167,11 +167,11 @@ export default function Clients() {
     return () => window.removeEventListener('resize', h);
   }, []);
 
-  const [page, setPage]       = useState(1);
-  const [limit, setLimit]     = useState(20);
-  const [total, setTotal]     = useState(0);
-  const [search, setSearch]   = useState('');
-  const [status, setStatus]   = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -179,7 +179,7 @@ export default function Clients() {
     setLoading(true);
     try {
       const qs = new URLSearchParams({ page_no: page, limit, search, status });
-      const res  = await apiCall(`/client/list?${qs}`, 'GET');
+      const res = await apiCall(`/client/list?${qs}`, 'GET');
       const data = await res.json();
       if (res.ok && data.success !== false) {
         setClients(data.data || []);
@@ -341,7 +341,7 @@ export default function Clients() {
         {loading ? (
           viewMode === 'table' ? <TableSkeleton /> : <CardSkeleton />
         ) : clients.length === 0 ? (
-          <div className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
+          <div className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
             <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full">
               <Users size={48} className="text-slate-300 dark:text-slate-600" />
             </div>

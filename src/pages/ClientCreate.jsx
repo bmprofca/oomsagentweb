@@ -9,9 +9,9 @@ import toast from 'react-hot-toast';
 
 // ── Steps ─────────────────────────────────────────────────────────────────────
 const STEPS = [
-  { id: 'profile',  label: 'Profile',           icon: User,      description: 'Personal information' },
-  { id: 'contact',  label: 'Contact & Address',  icon: MapPin,    description: 'Address & contact details' },
-  { id: 'business', label: 'Business Details',   icon: Building2, description: 'Firms & registrations' },
+  { id: 'profile', label: 'Profile', icon: User, description: 'Personal information' },
+  { id: 'contact', label: 'Contact & Address', icon: MapPin, description: 'Address & contact details' },
+  { id: 'business', label: 'Business Details', icon: Building2, description: 'Firms & registrations' },
 ];
 
 // ── Form helpers ───────────────────────────────────────────────────────────────
@@ -146,7 +146,7 @@ function FirmEditor({ firm, index, onChange, onDelete, errors, total }) {
   const isIndividual = firm.type === 'individual';
 
   return (
-    <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm overflow-hidden">
+    <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm overflow-hidden">
       {/* Firm header */}
       <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
         <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ function StepBusiness({ firms, onChange, errors }) {
       ))}
       <button
         onClick={addFirm}
-        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all"
+        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-sm border-2 border-dashed border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all"
       >
         <Plus size={15} /> Add Another Firm
       </button>
@@ -267,11 +267,10 @@ function StepIndicator({ steps, current }) {
         return (
           <React.Fragment key={step.id}>
             <div className="flex flex-col items-center gap-1.5">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 border-2 ${
-                done    ? 'bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-200 dark:shadow-sky-900/40' :
-                active  ? 'bg-white dark:bg-slate-800 border-sky-500 text-sky-600 dark:text-sky-400 shadow-md' :
-                          'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'
-              }`}>
+              <div className={`w-10 h-10 rounded-sm flex items-center justify-center transition-all duration-300 border-2 ${done ? 'bg-sky-500 border-sky-500 text-white shadow-md shadow-sky-200 dark:shadow-sky-900/40' :
+                active ? 'bg-white dark:bg-slate-800 border-sky-500 text-sky-600 dark:text-sky-400 shadow-md' :
+                  'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'
+                }`}>
                 {done ? <CheckCircle size={18} /> : <Icon size={16} />}
               </div>
               <div className="text-center">
@@ -317,10 +316,10 @@ function validateStep(step, data) {
       if (!f.pan) e[`firm_${i}_pan`] = 'PAN required';
       if (f.type !== 'individual') {
         if (!f.firm) e[`firm_${i}_firm`] = 'Firm name required';
-        if (!f.address?.state)    e[`firm_${i}_state`]    = 'State required';
+        if (!f.address?.state) e[`firm_${i}_state`] = 'State required';
         if (!f.address?.district) e[`firm_${i}_district`] = 'District required';
-        if (!f.address?.town)     e[`firm_${i}_town`]     = 'Town required';
-        if (!f.address?.pincode)  e[`firm_${i}_pincode`]  = 'Pincode required';
+        if (!f.address?.town) e[`firm_${i}_town`] = 'Town required';
+        if (!f.address?.pincode) e[`firm_${i}_pincode`] = 'Pincode required';
       }
     });
   }
@@ -331,10 +330,10 @@ function validateStep(step, data) {
 export default function ClientCreate() {
   const navigate = useNavigate();
 
-  const [step, setStep]       = useState(0);
-  const [errors, setErrors]   = useState({});
+  const [step, setStep] = useState(0);
+  const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone]       = useState(false);
+  const [done, setDone] = useState(false);
 
   const [data, setData] = useState({
     profile: { pan: '', full_name: '', care_of: '', guardian_name: '', date_of_birth: '', gender: '', image: '' },
@@ -343,9 +342,9 @@ export default function ClientCreate() {
     business: [defaultFirm()],
   });
 
-  const setProfile  = (v) => setData(p => ({ ...p, profile: v }));
-  const setContact  = (v) => setData(p => ({ ...p, contact: v }));
-  const setAddress  = (v) => setData(p => ({ ...p, address: v }));
+  const setProfile = (v) => setData(p => ({ ...p, profile: v }));
+  const setContact = (v) => setData(p => ({ ...p, contact: v }));
+  const setAddress = (v) => setData(p => ({ ...p, address: v }));
   const setBusiness = (v) => setData(p => ({ ...p, business: v }));
 
   const goNext = () => {
@@ -367,7 +366,7 @@ export default function ClientCreate() {
         address: data.address,
         business: data.business,
       };
-      const res  = await apiCall('/client/create', 'POST', payload);
+      const res = await apiCall('/client/create', 'POST', payload);
       const resp = await res.json();
       if (res.ok && resp.success !== false) {
         toast.success('Client created successfully!');
@@ -429,12 +428,12 @@ export default function ClientCreate() {
         </div>
 
         {/* Step indicator */}
-        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-6">
+        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-6">
           <StepIndicator steps={STEPS} current={step} />
         </div>
 
         {/* Step content */}
-        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-3xl border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
+        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm">
           <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700/50">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-900/30 flex items-center justify-center">

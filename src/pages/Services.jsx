@@ -26,7 +26,7 @@ function Pulse({ h = 'h-4', w = 'w-full', rounded = 'rounded' }) {
 
 function TableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl shadow-sm">
+    <div className="overflow-hidden rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -57,7 +57,7 @@ function CardSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-5 flex flex-col gap-4 shadow-sm">
+        <div key={i} className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-5 flex flex-col gap-4 shadow-sm">
           <Pulse h="h-5" w="w-3/4" rounded="rounded-full" />
           <Pulse h="h-4" w="w-1/2" rounded="rounded-full" />
           <div className="flex justify-between mt-2">
@@ -127,11 +127,11 @@ export default function Services() {
     return () => window.removeEventListener('resize', h);
   }, []);
 
-  const [page, setPage]       = useState(1);
-  const [limit, setLimit]     = useState(20);
-  const [total, setTotal]     = useState(0);
-  const [search, setSearch]   = useState('');
-  const [type, setType]       = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [total, setTotal] = useState(0);
+  const [search, setSearch] = useState('');
+  const [type, setType] = useState('');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState(null);
@@ -145,7 +145,7 @@ export default function Services() {
         search,
         type,
       });
-      const res  = await apiCall(`/service/list?${qs}`, 'GET');
+      const res = await apiCall(`/service/list?${qs}`, 'GET');
       const data = await res.json();
       if (res.ok && data.success !== false) {
         setServices(data.data || []);
@@ -258,7 +258,7 @@ export default function Services() {
         {loading ? (
           viewMode === 'table' ? <TableSkeleton /> : <CardSkeleton />
         ) : services.length === 0 ? (
-          <div className="rounded-3xl border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
+          <div className="rounded-sm border border-slate-200/60 dark:border-slate-700/60 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl p-16 text-center flex flex-col items-center gap-4 shadow-sm">
             <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full">
               <CheckSquare size={48} className="text-slate-300 dark:text-slate-600" />
             </div>
@@ -317,7 +317,7 @@ export default function Services() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Service Info</p>
                 <p className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <Layers size={14} className="text-slate-400" />
@@ -326,7 +326,7 @@ export default function Services() {
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">SAC Code: {selectedService.sac_code || '—'}</p>
               </div>
 
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Financials</p>
                 <p className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-1">
                   <IndianRupee size={16} className="text-slate-400" />
@@ -337,9 +337,9 @@ export default function Services() {
                 </p>
               </div>
             </div>
-            
+
             {selectedService.margin && (
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/50 w-full mt-4">
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-sm border border-slate-100 dark:border-slate-700/50 w-full mt-4">
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Margin Details</p>
                 <p className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1 text-base">
                   <IndianRupee size={14} className="text-slate-400" /> {fmt(selectedService.margin.amount)} ({selectedService.margin.margin_value}{selectedService.margin.margin_type === 'percentage' ? '%' : ''})
