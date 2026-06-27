@@ -5,6 +5,7 @@ import {
   Briefcase,
   FileBox,
   IndianRupee,
+  Users
 } from 'lucide-react';
 import { useLocation, Link } from 'react-router-dom';
 
@@ -22,9 +23,9 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
       path: '/dashboard',
     },
     {
-      icon: FileBox,
-      label: 'Tasks',
-      path: '/task',
+      icon:Users,
+      label:'Clients',
+      path:'/clients'
     },
     {
       icon: Briefcase,
@@ -32,14 +33,19 @@ const Sidebar = ({ isMobile, sidebarOpen, toggleSidebar, onHover, isExpanded }) 
       path: '/services',
     },
     {
-      icon:IndianRupee,
-      label:'Ledger',
-      path:'/ledger'
+      icon: FileBox,
+      label: 'Tasks',
+      path: '/task',
     },
     {
-      icon:LifeBuoy,
-      label:'Help & Support',
-      path:'/support'
+      icon: IndianRupee,
+      label: 'Ledger',
+      path: '/ledger'
+    },
+    {
+      icon: LifeBuoy,
+      label: 'Help & Support',
+      path: '/support'
     }
   ];
 

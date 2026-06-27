@@ -14,7 +14,9 @@ import Ledger from "./pages/Ledger";
 import Support from "./pages/Support";
 import Task from "./pages/Tasks";
 import Services from "./pages/Services";
-
+import Clients from "./pages/Clients";
+import ClientCreate from "./pages/ClientCreate";
+import ClientProfile from "./pages/ClientProfile";
 
 function App() {
   return (
@@ -42,6 +44,9 @@ function App() {
                   <Route path="/task/ongoing" element={<Task />} />
                   <Route path="/task/completed" element={<Task />} />
                   <Route path="/services" element={<Services />} />
+                  <Route path="/clients" element={<Clients />} />
+                  <Route path="/clients/create" element={<ClientCreate />} />
+                  <Route path="/clients/:username" element={<ClientProfile />} />
                 </Route>
               </Route>
 
