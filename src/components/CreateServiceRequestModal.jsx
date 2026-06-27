@@ -1,17 +1,25 @@
 // ── Create Service Request Modal ─────────────────────────────────────────────
 //
 // FIXES applied:
-//  1. apiCall() already returns parsed JSON — removed the extra .json() calls
-//     that were causing "[object Promise]" in the select and swallowing results.
+//  1. apiCall() returns the raw fetch Response object (confirmed from
+//     utils/apiCall.js) — every call site here was treating the Response
+//     itself as the parsed body (`result?.success`, `result?.data`, etc.),
+//     which is always undefined on a Response. Added `.json()` on the
+//     awaited response everywhere it's used in this file.
 //  2. Removed `loadingClients` / `loadingServices` from useCallback deps —
 //     they caused the functions to be recreated on every render, triggering
-//     duplicate 304/404 requests in a tight loop.
+//     duplicate requests in a tight loop.
 //  3. Used a ref-based guard instead of the stale state value to prevent
 //     concurrent fetches.
 //  4. Removed `agentUsername` from fetchClients deps (it isn't used there).
-//  5. service list: removed the client-side `.filter()` — the API already
-//     receives `type=general`, so double-filtering was fine but harmless;
-//     kept it removed for clarity.
+//  5. `onInputChange={(val) => fetchClients(1, val)}` / `fetchServices(...)`
+//     returned the Promise from the async fetch function. react-select uses
+//     the return value of onInputChange as the new input text when it isn't
+//     undefined, so it was setting the input box's text to that Promise —
+//     which stringifies as "[object Promise]" (visible in the Service field)
+//     and also corrupted the Client field's display after selecting a value.
+//     Fixed by calling the fetch as a side effect and explicitly returning
+//     `val` (the actual typed string) instead.
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { FileText, Plus, Loader2 } from 'lucide-react';
@@ -52,11 +60,12 @@ function CreateServiceRequestModal({ isOpen, onClose, onSuccess, agentUsername }
     setLoadingClients(true);
 
     try {
-      // apiCall already returns parsed JSON — no .json() needed
-      const result = await apiCall(
-        `/agent/client/list?page_no=${pageNo}&limit=20&search=${encodeURIComponent(searchTerm)}`,
+      // apiCall returns the raw Response — parse the body here.
+      const response = await apiCall(
+        `/client/list?status=active&page_no=${pageNo}&limit=20&search=${encodeURIComponent(searchTerm)}`,
         'GET'
       );
+      const result = await response.json();
 
       if (result?.success) {
         const newOptions = (result.data || []).map((client) => ({
@@ -86,10 +95,11 @@ function CreateServiceRequestModal({ isOpen, onClose, onSuccess, agentUsername }
     setLoadingServices(true);
 
     try {
-      const result = await apiCall(
+      const response = await apiCall(
         `/service/list?page_no=${pageNo}&limit=20&search=${encodeURIComponent(searchTerm)}&type=general`,
         'GET'
       );
+      const result = await response.json();
 
       if (result?.success) {
         const newOptions = (result.data || []).map((service) => ({
@@ -150,12 +160,13 @@ function CreateServiceRequestModal({ isOpen, onClose, onSuccess, agentUsername }
 
     setSubmitting(true);
     try {
-      const result = await apiCall('/service/service-request/create', 'POST', {
+      const response = await apiCall('/service/service-request/create', 'POST', {
         username:   formData.client.value,
         firm_id:    formData.firm.value,
         service_id: formData.service.value,
         remark:     formData.remark || '',
       });
+      const result = await response.json();
 
       if (result?.success) {
         toast.success('Service request created successfully!');
@@ -226,7 +237,10 @@ function CreateServiceRequestModal({ isOpen, onClose, onSuccess, agentUsername }
             options={clientOptions}
             value={formData.client}
             onChange={handleClientChange}
-            onInputChange={(val) => fetchClients(1, val)}
+            onInputChange={(val) => {
+              fetchClients(1, val);
+              return val;
+            }}
             isLoading={loadingClients}
             placeholder="Search and select a client..."
             isClearable
@@ -285,7 +299,10 @@ function CreateServiceRequestModal({ isOpen, onClose, onSuccess, agentUsername }
             options={serviceOptions}
             value={formData.service}
             onChange={(sel) => setFormData((prev) => ({ ...prev, service: sel }))}
-            onInputChange={(val) => fetchServices(1, val)}
+            onInputChange={(val) => {
+              fetchServices(1, val);
+              return val;
+            }}
             isLoading={loadingServices}
             placeholder="Search and select a service..."
             isClearable

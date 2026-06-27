@@ -68,6 +68,12 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
+// Currency formatter — server sends raw numbers (e.g. 6720), not strings
+const formatINR = (n) => {
+  const num = Number(n || 0);
+  return num.toLocaleString('en-IN');
+};
+
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function Pulse({ h = 'h-4', w = 'w-full', rounded = 'rounded' }) {
   return <div className={`${h} ${w} ${rounded} bg-slate-200 dark:bg-slate-700 animate-pulse`} />;
@@ -122,14 +128,14 @@ function CardSkeleton() {
 // ── Service Request Card ─────────────────────────────────────────────────────
 function ServiceRequestCard({ request, onClick }) {
   const { label, badge, icon: StatusIcon } = getStatus(request.status);
-  
+
   return (
     <ManagementCard
       title={request.service_name || request.service_id || '—'}
       subtitle={
         <span className="flex items-center gap-1.5 mt-0.5 text-[11px] font-medium text-slate-500 dark:text-slate-400">
           <User size={11} />
-          <span className="font-mono">{request.client_name || request.username}</span>
+          <span className="font-mono">{request.client?.name || request.client?.username || '—'}</span>
         </span>
       }
       icon={<FileText size={14} />}
@@ -141,7 +147,7 @@ function ServiceRequestCard({ request, onClick }) {
       }
       onClick={onClick}
       accent="indigo"
-      menuId={`request-${request.id}`}
+      menuId={`request-${request.request_id}`}
       actions={[
         {
           id: 'view',
@@ -159,7 +165,7 @@ function ServiceRequestCard({ request, onClick }) {
               </p>
             )}
             <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <span className="font-bold text-slate-700 dark:text-slate-300">₹{request.amount || request.total_amount || 0}</span>
+              <span className="font-bold text-slate-700 dark:text-slate-300">₹{formatINR(request.charges?.amount)}</span>
             </p>
           </div>
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-800 px-2 py-1 rounded-lg">
@@ -169,10 +175,10 @@ function ServiceRequestCard({ request, onClick }) {
         </div>
       }
     >
-      {request.remark && (
+      {request.client_remark && (
         <div className="flex items-center gap-2 text-[11px] text-slate-600 dark:text-slate-400 mb-2 mt-2 bg-slate-50 dark:bg-slate-800/80 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
           <FileText size={12} className="shrink-0 text-slate-400" />
-          <span className="truncate font-medium">{request.remark}</span>
+          <span className="truncate font-medium">{request.client_remark}</span>
         </div>
       )}
     </ManagementCard>
@@ -185,7 +191,7 @@ export default function ServiceRequests() {
   const navigate = useNavigate();
   
   // Get logged-in agent username from context/auth
-  const agentUsername = "abc123client456"; // This should come from auth context
+  const agentUsername = ""; // This should come from auth context
 
   const [viewMode, setViewMode] = useState(() => window.innerWidth < 768 ? 'card' : 'table');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -218,16 +224,18 @@ export default function ServiceRequests() {
       if (status) params.append('status', status);
       if (firmId) params.append('firm_id', firmId);
       
+      // apiCall returns the raw Response object, not parsed JSON — must call .json()
       const res = await apiCall(`/service/service-request/list?${params}`, 'GET');
       const data = await res.json();
-      
-      if (res.ok && data.success !== false) {
-        setRequests(data.data || []);
-        setTotal(data.pagination?.total ?? 0);
+
+      if (res.ok && data?.success !== false) {
+        setRequests(data?.data || []);
+        // pagination.total is the field name from the actual API response
+        setTotal(data?.pagination?.total ?? 0);
       } else {
         setRequests([]);
         setTotal(0);
-        toast.error(data.message || 'Failed to load service requests');
+        toast.error(data?.message || 'Failed to load service requests');
       }
     } catch (error) {
       console.error('Error fetching service requests:', error);
@@ -252,9 +260,9 @@ export default function ServiceRequests() {
           <p className="font-bold text-slate-900 dark:text-white text-sm">
             {row.service_name || row.service_id || '—'}
           </p>
-          {row.remark && (
+          {row.client_remark && (
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-xs">
-              {row.remark}
+              {row.client_remark}
             </p>
           )}
         </div>
@@ -266,11 +274,11 @@ export default function ServiceRequests() {
       render: (row) => (
         <div>
           <p className="font-semibold text-slate-800 dark:text-slate-200 text-sm">
-            {row.client_name || row.username || '—'}
+            {row.client?.name || row.client?.username || '—'}
           </p>
-          {row.username && (
+          {row.client?.username && (
             <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
-              {row.username}
+              {row.client.username}
             </p>
           )}
         </div>
@@ -296,9 +304,16 @@ export default function ServiceRequests() {
       key: 'amount',
       label: 'Amount',
       render: (row) => (
-        <span className="font-bold text-indigo-600 dark:text-indigo-400">
-          ₹{row.amount || row.total_amount || 0}
-        </span>
+        <div>
+          <span className="font-bold text-indigo-600 dark:text-indigo-400">
+            ₹{formatINR(row.charges?.amount)}
+          </span>
+          {row.charges?.fees != null && (
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+              Fee ₹{formatINR(row.charges.fees)} + tax {row.charges.tax_rate}%
+            </p>
+          )}
+        </div>
       ),
     },
     {
@@ -330,7 +345,7 @@ export default function ServiceRequests() {
       id: 'view',
       label: 'View Details',
       icon: <Eye size={14} />,
-      onClick: () => navigate(`/service-requests/${row.id}`),
+      onClick: () => navigate(`/service-requests/${row.request_id}`),
     },
   ];
 
@@ -401,9 +416,9 @@ export default function ServiceRequests() {
             <ManagementTable
               rows={requests}
               columns={tableColumns}
-              rowKey="id"
+              rowKey="request_id"
               getActions={getTableActions}
-              onRowClick={(row) => navigate(`/service-requests/${row.id}`)}
+              onRowClick={(row) => navigate(`/service-requests/${row.request_id}`)}
               accent="indigo"
               showSerialNo={true}
             />
@@ -411,9 +426,9 @@ export default function ServiceRequests() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {requests.map((request) => (
                 <ServiceRequestCard
-                  key={request.id}
+                  key={request.request_id}
                   request={request}
-                  onClick={() => navigate(`/service-requests/${request.id}`)}
+                  onClick={() => navigate(`/service-requests/${request.request_id}`)}
                 />
               ))}
             </div>
