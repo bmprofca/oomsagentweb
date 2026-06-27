@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  FaCalendarAlt, FaTimes, FaCheck, FaUndo, FaChevronLeft, FaChevronRight,
+  FaCalendarAlt, FaTimes, FaCheck, FaUndo, FaChevronLeft, FaChevronRight, FaChevronDown,
 } from "react-icons/fa";
+import SelectField from "./SelectField";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -56,17 +57,85 @@ function sameDay(a, b) {
     a.getDate() === b.getDate();
 }
 
+// ─── Year Dropdown ────────────────────────────────────────────────────────────
+// Shows a scrollable list of years; clicking header "May 2026" toggles this.
+
+function YearDropdown({ currentYear, onSelect, onClose, minYear = 1900, maxYear }) {
+  const max = maxYear || new Date().getFullYear() + 10;
+  const years = [];
+  for (let y = max; y >= minYear; y--) years.push(y);
+
+  const containerRef = useRef(null);
+
+  // Scroll the selected year into view on mount
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const selected = containerRef.current.querySelector("[data-selected='true']");
+    if (selected) {
+      selected.scrollIntoView({ block: "center", behavior: "instant" });
+    }
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        position: "absolute",
+        top: "100%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 9999,
+        marginTop: 4,
+        width: 140,
+        maxHeight: 220,
+        overflowY: "auto",
+      }}
+      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
+    >
+      {years.map((y) => (
+        <button
+          key={y}
+          data-selected={y === currentYear ? "true" : "false"}
+          onClick={() => { onSelect(y); onClose(); }}
+          className={`block w-full px-3 py-1.5 text-center text-[13px] transition-colors ${
+            y === currentYear 
+              ? "bg-blue-50 text-blue-600 font-semibold dark:bg-blue-900/30 dark:text-blue-400" 
+              : "text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+          }`}
+        >
+          {y}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ─── Calendar Grid ────────────────────────────────────────────────────────────
 
 function Calendar({ mode, viewDate, onViewChange, selectedSingle, onSelectSingle,
-  rangeStart, rangeEnd, onRangeClick, onSinglePick }) {
+  rangeStart, rangeEnd, onRangeClick, onSinglePick, minYear, maxYear }) {
 
   const [hoverDate, setHoverDate] = useState(null);
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+  const headerRef = useRef(null);
+
   const today = startOfDay(new Date());
   const y = viewDate.getFullYear(), m = viewDate.getMonth();
   const firstDay = new Date(y, m, 1).getDay();
   const daysInMonth = new Date(y, m + 1, 0).getDate();
   const prevMonthDays = new Date(y, m, 0).getDate();
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!showYearDropdown) return;
+    const handler = (e) => {
+      if (headerRef.current && !headerRef.current.contains(e.target)) {
+        setShowYearDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showYearDropdown]);
 
   function getDayClass(date) {
     const base =
@@ -147,9 +216,53 @@ function Calendar({ mode, viewDate, onViewChange, selectedSingle, onSelectSingle
         >
           ‹
         </button>
-        <span className="text-[11px] sm:text-xs font-medium text-gray-800 dark:text-gray-200 text-center flex-1 min-w-0 truncate">
-          {MONTHS_FULL[m]} {y}
-        </span>
+
+        {/* Clickable header — opens year dropdown */}
+        <div ref={headerRef} style={{ position: "relative", flex: 1, textAlign: "center" }}>
+          <button
+            onClick={() => setShowYearDropdown(v => !v)}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              fontSize: 12,
+              fontWeight: 500,
+              color: "var(--text-primary, #111)",
+              background: "none",
+              border: "none",
+              borderRadius: 6,
+              padding: "2px 8px",
+              cursor: "pointer",
+              transition: "background 0.12s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "var(--surface-1, #f3f4f6)"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}
+            title="Click to jump to a year"
+          >
+            {MONTHS_FULL[m]} {y}
+            <FaChevronDown
+              size={9}
+              style={{
+                transform: showYearDropdown ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.15s",
+                opacity: 0.6,
+              }}
+            />
+          </button>
+
+          {showYearDropdown && (
+            <YearDropdown
+              currentYear={y}
+              minYear={minYear || 1900}
+              maxYear={maxYear}
+              onSelect={(selectedYear) => {
+                onViewChange(new Date(selectedYear, m, 1));
+              }}
+              onClose={() => setShowYearDropdown(false)}
+            />
+          )}
+        </div>
+
         <button
           onClick={() => onViewChange(new Date(y, m + 1, 1))}
           className="w-7 h-7 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 text-gray-600 transition-colors flex-shrink-0 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700/50"
@@ -157,6 +270,7 @@ function Calendar({ mode, viewDate, onViewChange, selectedSingle, onSelectSingle
           ›
         </button>
       </div>
+
       {/* Day labels */}
       <div className="grid grid-cols-7 mb-1">
         {DAYS.map(d => (
@@ -193,29 +307,24 @@ function Calendar({ mode, viewDate, onViewChange, selectedSingle, onSelectSingle
 
 // ─── Month Picker Grid ───────────────────────────────────────────────────────
 
-function MonthYearPicker({ month, year, onMonthChange, onYearChange }) {
-  const thisYear = new Date().getFullYear();
-  const years = Array.from({ length: 11 }, (_, i) => thisYear - 5 + i);
+function MonthYearPicker({ month, year, onMonthChange, onYearChange, minYear = 1900 }) {
+  const maxYear = new Date().getFullYear() + 10;
+  // Build full range of years
+  const years = [];
+  for (let y = maxYear; y >= minYear; y--) years.push(y);
 
   return (
     <div className="space-y-4">
-      {/* Year selector */}
+      {/* Year selector — native scrollable select for full range */}
       <div>
         <p className="text-[9px] text-gray-400 mb-2 uppercase tracking-widest font-semibold dark:text-gray-500">Year</p>
-        <div className="grid grid-cols-4 gap-1">
-          {years.map(y => (
-            <button
-              key={y}
-              onClick={() => onYearChange(y)}
-              className={`py-1.5 rounded-md text-[10px] sm:text-xs font-medium transition-colors ${year === y
-                ? "bg-blue-500 text-white dark:bg-blue-600"
-                : "border border-gray-100 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700/50"
-                }`}
-            >
-              {y}
-            </button>
-          ))}
-        </div>
+        <SelectField
+          options={years.map(y => ({ value: y, label: y.toString() }))}
+          value={{ value: year, label: year.toString() }}
+          onChange={opt => onYearChange(Number(opt.value))}
+          menuPlacement="auto"
+          maxMenuHeight={200}
+        />
       </div>
       {/* Month selector */}
       <div>
@@ -253,6 +362,8 @@ export default function AdvancedDateFilter({
   buttonClassName = "",
   tabOptions = DEFAULT_TAB_OPTIONS,
   showDateStepper = false,
+  minYear = 1900,
+  maxYear,
 }) {
   const allowedTabs = Array.isArray(tabOptions) && tabOptions.length > 0
     ? tabOptions
@@ -265,15 +376,12 @@ export default function AdvancedDateFilter({
 
   const today = startOfDay(new Date());
 
-  // --- Internal state for Date tab ---
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedSingle, setSelectedSingle] = useState(null);
 
-  // --- Internal state for Month tab ---
   const [tempMonth, setTempMonth] = useState(new Date().getMonth() + 1);
   const [tempYear, setTempYear] = useState(new Date().getFullYear());
 
-  // --- Internal state for Range tab ---
   const [rangeStart, setRangeStart] = useState(null);
   const [rangeEnd, setRangeEnd] = useState(null);
   const [rangeViewDate, setRangeViewDate] = useState(new Date());
@@ -281,7 +389,6 @@ export default function AdvancedDateFilter({
   const prevIsOpen = useRef(false);
   const prevValue = useRef(value);
 
-  // Sync internal state when opening or when value changes
   useEffect(() => {
     const valueChanged = prevValue.current !== value;
     const justOpened = !prevIsOpen.current && isOpen;
@@ -328,7 +435,6 @@ export default function AdvancedDateFilter({
     }
   }, [allowedTabs, activeTab]);
 
-  // Close on outside click / Escape
   useEffect(() => {
     if (!isOpen) return;
     const onPointerDown = (e) => {
@@ -393,7 +499,6 @@ export default function AdvancedDateFilter({
     return parseDateValue(value?.date || value?.from_date || value?.to_date || toIsoDate(new Date())) || today;
   }
 
-  // --- Display label on trigger button ---
   function getDisplayLabel() {
     if (!value) return placeholder;
     if (value.date) return fmt(parseDateValue(value.date)) || placeholder;
@@ -408,7 +513,6 @@ export default function AdvancedDateFilter({
 
   const hasFilter = value && (value.date || (value.month && value.year) || (value.from_date && value.to_date));
 
-  // --- Tab label ---
   function getTabLabel() {
     if (activeTab === "date") {
       return selectedSingle ? fmt(selectedSingle) : "Pick a date";
@@ -426,6 +530,7 @@ export default function AdvancedDateFilter({
     { key: "month", label: "Month & year" },
     { key: "range", label: "Date range" },
   ].filter((tab) => allowedTabs.includes(tab.key));
+
   const shouldShowStepper = showDateStepper && allowedTabs.includes("date");
   const stepperDate = getStepperDate();
   const canStepForward = stepperDate < today;
@@ -509,7 +614,7 @@ export default function AdvancedDateFilter({
             {/* Panel */}
             <div className="w-full rounded-md border border-gray-200 bg-white shadow-lg overflow-hidden font-sans flex flex-col dark:border-gray-700 dark:bg-gray-800 dark:shadow-gray-950/50">
 
-              {/* Header — selected label */}
+              {/* Header */}
               <div className="px-3 sm:px-4 pt-2.5 sm:pt-3 pb-2 border-b border-gray-100 dark:border-gray-700">
                 <p className="text-[9px] text-gray-400 mb-1.5 uppercase tracking-widest font-semibold dark:text-gray-500">Selected</p>
                 <p className="text-xs sm:text-sm font-medium text-gray-800 break-words dark:text-gray-200">{getTabLabel()}</p>
@@ -536,7 +641,6 @@ export default function AdvancedDateFilter({
               {/* Body */}
               <div className="px-3 sm:px-4 py-3.5 overflow-y-auto">
 
-                {/* DATE TAB — inline calendar */}
                 {activeTab === "date" && (
                   <Calendar
                     mode="single"
@@ -544,6 +648,8 @@ export default function AdvancedDateFilter({
                     onViewChange={setViewDate}
                     selectedSingle={selectedSingle}
                     onSelectSingle={setSelectedSingle}
+                    minYear={minYear}
+                    maxYear={maxYear}
                     onSinglePick={(date) => {
                       if (date) {
                         setSelectedSingle(date);
@@ -554,17 +660,16 @@ export default function AdvancedDateFilter({
                   />
                 )}
 
-                {/* MONTH TAB */}
                 {activeTab === "month" && (
                   <MonthYearPicker
                     month={tempMonth}
                     year={tempYear}
+                    minYear={minYear}
                     onMonthChange={setTempMonth}
                     onYearChange={setTempYear}
                   />
                 )}
 
-                {/* RANGE TAB */}
                 {activeTab === "range" && (
                   <div>
                     <p className="text-[10px] text-center text-gray-400 mb-2 h-4 px-1 dark:text-gray-500">
@@ -579,6 +684,8 @@ export default function AdvancedDateFilter({
                       rangeStart={rangeStart}
                       rangeEnd={rangeEnd}
                       onRangeClick={handleRangeClick}
+                      minYear={minYear}
+                      maxYear={maxYear}
                     />
                   </div>
                 )}

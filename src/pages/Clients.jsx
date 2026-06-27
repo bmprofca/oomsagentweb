@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Users, Eye, User, Building2, Phone, Mail,
-  Activity, CheckCircle, Clock, List,
+  Activity, CheckCircle, Clock, List, UserPlus,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/apiCall';
@@ -207,7 +207,7 @@ export default function Clients() {
       label: 'Client',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
             {row.image
               ? <img src={row.image} alt="" className="w-8 h-8 rounded-full object-cover" />
               : <User size={14} className="text-sky-600 dark:text-sky-400" />}
@@ -310,13 +310,14 @@ export default function Clients() {
       onRefresh={fetchClients}
       refreshing={loading}
       refreshLabel="Refresh"
-      headerActions={
+      actions={
         <button
+          type="button"
           onClick={() => navigate('/clients/create')}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white text-sm font-bold transition-colors shadow-sm"
+          className="inline-flex items-center justify-center gap-1.5 md:gap-2 rounded-md border border-sky-200 dark:border-sky-800 bg-blue-50 dark:bg-blue-950/30 px-2 py-1.5 md:px-4 md:py-2 text-[11px] md:text-sm font-semibold text-sky-700 dark:text-sky-400 shadow-sm transition-all duration-200 hover:bg-blue-100 dark:hover:bg-blue-900 hover:shadow-md"
         >
-          <User size={14} />
-          Add Client
+          <UserPlus size={13} />
+          <span className="hidden md:inline whitespace-nowrap">Add Client</span>
         </button>
       }
     >

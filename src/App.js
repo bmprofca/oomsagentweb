@@ -17,6 +17,7 @@ import Services from "./pages/Services";
 import Clients from "./pages/Clients";
 import ClientCreate from "./pages/ClientCreate";
 import ClientProfile from "./pages/ClientProfile";
+import ClientEdit from "./pages/ClientEdit";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
                   <Route path="/clients" element={<Clients />} />
                   <Route path="/clients/create" element={<ClientCreate />} />
                   <Route path="/clients/:username" element={<ClientProfile />} />
+                  <Route path="/clients/:username/edit" element={<ClientEdit />} />
                 </Route>
               </Route>
 

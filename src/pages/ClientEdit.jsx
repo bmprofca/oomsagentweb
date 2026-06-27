@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  User, MapPin, Building2, ChevronLeft, ChevronRight,
-  Plus, Trash2, CheckCircle, AlertCircle, Upload,
+  User, MapPin, ChevronLeft, ChevronRight,
+  CheckCircle, AlertCircle, Upload,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { apiCall, uploadFile } from '../utils/apiCall';
 import toast from 'react-hot-toast';
 import SelectField from '../components/common/SelectField';
@@ -13,7 +13,6 @@ import AdvancedDateFilter from '../components/common/AdvancedDateFilter';
 const STEPS = [
   { id: 'profile', label: 'Profile', icon: User, description: 'Personal information' },
   { id: 'contact', label: 'Contact & Address', icon: MapPin, description: 'Address & contact details' },
-  { id: 'business', label: 'Business Details', icon: Building2, description: 'Firms & registrations' },
 ];
 
 // ── Form helpers ───────────────────────────────────────────────────────────────
@@ -120,21 +119,6 @@ function ImageUploadField({ value, onChange }) {
     </div>
   );
 }
-
-// ── Default firm ───────────────────────────────────────────────────────────────
-const defaultFirm = (pan = '') => ({
-  type: 'individual',
-  pan,
-  firm: '',
-  gst: '',
-  tan: '',
-  vat: '',
-  cin: '',
-  address: { state: '', district: '', town: '', pincode: '', address_line_1: '', address_line_2: '' },
-});
-
-// ── Firm Type Badge ────────────────────────────────────────────────────────────
-const FIRM_TYPES = ['individual', 'proprietorship', 'partnership', 'llp', 'private limited', 'company'];
 
 // ── Step: Profile ──────────────────────────────────────────────────────────────
 function StepProfile({ data, onChange, errors }) {
@@ -256,125 +240,6 @@ function StepContact({ contact, address, onContactChange, onAddressChange, error
   );
 }
 
-// ── Firm Editor ────────────────────────────────────────────────────────────────
-function FirmEditor({ firm, index, onChange, onDelete, errors, total }) {
-  const set = (k, v) => onChange({ ...firm, [k]: v });
-  const setA = (k, v) => onChange({ ...firm, address: { ...firm.address, [k]: v } });
-  const isIndividual = firm.type === 'individual';
-
-  return (
-    <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm overflow-hidden">
-      {/* Firm header */}
-      <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-700/50 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
-        <div className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-lg bg-sky-500 text-white text-[10px] font-black flex items-center justify-center">
-            {index + 1}
-          </span>
-          <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-            {firm.firm || (isIndividual ? 'Individual Firm' : 'New Firm')}
-          </p>
-          <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-widest bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700`}>
-            {firm.type}
-          </span>
-        </div>
-        {total > 1 && (
-          <button onClick={onDelete} className="p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-400 hover:text-rose-500 transition-colors">
-            <Trash2 size={14} />
-          </button>
-        )}
-      </div>
-
-      <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Field label="Firm Type" required>
-          <SelectField
-            options={FIRM_TYPES.map(t => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) }))}
-            value={{ value: firm.type || 'individual', label: (firm.type || 'individual').charAt(0).toUpperCase() + (firm.type || 'individual').slice(1) }}
-            onChange={opt => set('type', opt?.value || 'individual')}
-          />
-        </Field>
-        <Field label="PAN" error={errors?.[`firm_${index}_pan`]} required>
-          <input className={`${inp} font-mono uppercase`} placeholder="ABCDE1234F" value={firm.pan || ''} onChange={e => set('pan', e.target.value.toUpperCase())} maxLength={10} />
-        </Field>
-
-        {!isIndividual && (
-          <>
-            <div className="md:col-span-2">
-              <Field label="Firm Name" error={errors?.[`firm_${index}_firm`]} required>
-                <input className={inp} placeholder="Sharma Traders" value={firm.firm || ''} onChange={e => set('firm', e.target.value)} />
-              </Field>
-            </div>
-            <Field label="GST">
-              <input className={`${inp} font-mono`} placeholder="27ABCDE1234F1Z5" value={firm.gst || ''} onChange={e => set('gst', e.target.value)} />
-            </Field>
-            <Field label="TAN">
-              <input className={`${inp} font-mono`} placeholder="MUMS12345A" value={firm.tan || ''} onChange={e => set('tan', e.target.value)} />
-            </Field>
-            <Field label="VAT">
-              <input className={`${inp} font-mono`} value={firm.vat || ''} onChange={e => set('vat', e.target.value)} />
-            </Field>
-            <Field label="CIN">
-              <input className={`${inp} font-mono`} value={firm.cin || ''} onChange={e => set('cin', e.target.value)} />
-            </Field>
-
-            {/* Firm address */}
-            <div className="md:col-span-2">
-              <div className="h-px bg-slate-100 dark:bg-slate-700/50 my-1" />
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider my-3">Firm Address</p>
-            </div>
-            <Field label="State" error={errors?.[`firm_${index}_state`]} required>
-              <input className={inp} placeholder="Maharashtra" value={firm.address?.state || ''} onChange={e => setA('state', e.target.value)} />
-            </Field>
-            <Field label="District" error={errors?.[`firm_${index}_district`]} required>
-              <input className={inp} placeholder="Mumbai" value={firm.address?.district || ''} onChange={e => setA('district', e.target.value)} />
-            </Field>
-            <Field label="Town" error={errors?.[`firm_${index}_town`]} required>
-              <input className={inp} placeholder="Andheri" value={firm.address?.town || ''} onChange={e => setA('town', e.target.value)} />
-            </Field>
-            <Field label="Pincode" error={errors?.[`firm_${index}_pincode`]} required>
-              <input className={inp} placeholder="400053" value={firm.address?.pincode || ''} onChange={e => setA('pincode', e.target.value)} maxLength={6} />
-            </Field>
-            <Field label="Address Line 1">
-              <input className={inp} value={firm.address?.address_line_1 || ''} onChange={e => setA('address_line_1', e.target.value)} />
-            </Field>
-            <Field label="Address Line 2">
-              <input className={inp} value={firm.address?.address_line_2 || ''} onChange={e => setA('address_line_2', e.target.value)} />
-            </Field>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── Step: Business ─────────────────────────────────────────────────────────────
-function StepBusiness({ firms, onChange, errors }) {
-  const addFirm = () => onChange([...firms, defaultFirm()]);
-  const updateFirm = (i, firm) => onChange(firms.map((f, idx) => idx === i ? firm : f));
-  const removeFirm = (i) => onChange(firms.filter((_, idx) => idx !== i));
-
-  return (
-    <div className="space-y-4">
-      {firms.map((firm, i) => (
-        <FirmEditor
-          key={i}
-          firm={firm}
-          index={i}
-          onChange={(f) => updateFirm(i, f)}
-          onDelete={() => removeFirm(i)}
-          errors={errors}
-          total={firms.length}
-        />
-      ))}
-      <button
-        onClick={addFirm}
-        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-sm border-2 border-dashed border-slate-200 dark:border-slate-700 text-sm font-bold text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all"
-      >
-        <Plus size={15} /> Add Another Firm
-      </button>
-    </div>
-  );
-}
-
 // ── Step indicator ─────────────────────────────────────────────────────────────
 function StepIndicator({ steps, current }) {
   return (
@@ -430,27 +295,17 @@ function validateStep(step, data) {
     if (!data.address.town_or_village) e.town_or_village = 'Town/Village is required';
     if (!data.address.pincode) e.pincode = 'Pincode is required';
   }
-  if (step === 2) {
-    data.business.forEach((f, i) => {
-      if (!f.pan) e[`firm_${i}_pan`] = 'PAN required';
-      if (f.type !== 'individual') {
-        if (!f.firm) e[`firm_${i}_firm`] = 'Firm name required';
-        if (!f.address?.state) e[`firm_${i}_state`] = 'State required';
-        if (!f.address?.district) e[`firm_${i}_district`] = 'District required';
-        if (!f.address?.town) e[`firm_${i}_town`] = 'Town required';
-        if (!f.address?.pincode) e[`firm_${i}_pincode`] = 'Pincode required';
-      }
-    });
-  }
   return e;
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-export default function ClientCreate() {
+export default function ClientEdit() {
   const navigate = useNavigate();
+  const { username } = useParams();
 
   const [step, setStep] = useState(0);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -458,13 +313,58 @@ export default function ClientCreate() {
     profile: { pan: '', full_name: '', care_of: '', guardian_name: '', date_of_birth: '', gender: '', image: '' },
     contact: { mobile: '', country_code: '91', email: '' },
     address: { state: '', district: '', town_or_village: '', pincode: '', address_line_1: '', address_line_2: '' },
-    business: [defaultFirm()],
   });
+
+  const fetchClient = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await apiCall(`/client/details/${username}`, 'GET');
+      const d = await res.json();
+      if (res.ok && d.success !== false) {
+        const client = d.data;
+        setData({
+          profile: {
+            pan: client.profile?.pan || '',
+            full_name: client.profile?.full_name || '',
+            care_of: client.profile?.care_of || '',
+            guardian_name: client.profile?.guardian_name || '',
+            date_of_birth: client.profile?.date_of_birth || '',
+            gender: client.profile?.gender || '',
+            image: client.profile?.image || '',
+          },
+          contact: {
+            mobile: client.profile?.mobile || '',
+            country_code: client.profile?.country_code || '91',
+            email: client.profile?.email || '',
+          },
+          address: {
+            state: client.address?.state || '',
+            district: client.address?.district || '',
+            town_or_village: client.address?.town_or_village || '',
+            pincode: client.address?.pincode || '',
+            address_line_1: client.address?.address_line_1 || '',
+            address_line_2: client.address?.address_line_2 || '',
+          }
+        });
+      } else {
+        toast.error(d.message || 'Failed to load client');
+        navigate('/clients');
+      }
+    } catch {
+      toast.error('Failed to load client');
+      navigate('/clients');
+    } finally {
+      setLoading(false);
+    }
+  }, [username, navigate]);
+
+  useEffect(() => {
+    if (username) fetchClient();
+  }, [fetchClient, username]);
 
   const setProfile = (v) => setData(p => ({ ...p, profile: v }));
   const setContact = (v) => setData(p => ({ ...p, contact: v }));
   const setAddress = (v) => setData(p => ({ ...p, address: v }));
-  const setBusiness = (v) => setData(p => ({ ...p, business: v }));
 
   const goNext = () => {
     const e = validateStep(step, data);
@@ -476,53 +376,60 @@ export default function ClientCreate() {
   const goBack = () => { setErrors({}); setStep(s => s - 1); };
 
   const handleSubmit = async () => {
-    const e = validateStep(2, data);
+    const e = validateStep(1, data);
     if (Object.keys(e).length) { setErrors(e); return; }
     setSubmitting(true);
     try {
       const payload = {
         profile: { ...data.profile, ...{ mobile: data.contact.mobile, country_code: data.contact.country_code, email: data.contact.email } },
         address: data.address,
-        business: data.business,
       };
-      const res = await apiCall('/client/create', 'POST', payload);
+      const res = await apiCall(`/client/details/${username}`, 'PUT', payload);
       const resp = await res.json();
       if (res.ok && resp.success !== false) {
-        toast.success('Client created successfully!');
+        toast.success('Client updated successfully!');
         setDone(true);
       } else {
-        toast.error(resp.message || 'Failed to create client');
+        toast.error(resp.message || 'Failed to update client');
       }
     } catch {
-      toast.error('Failed to create client');
+      toast.error('Failed to update client');
     } finally {
       setSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (done) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/30 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800/80 flex items-center justify-center p-6">
+      <div className="min-h-[70vh] flex items-center justify-center p-6">
         <div className="text-center space-y-6 max-w-sm">
           <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mx-auto">
             <CheckCircle size={40} className="text-emerald-500" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white">Client Created!</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">The client profile has been registered successfully.</p>
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white">Client Updated!</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">The client profile has been updated successfully.</p>
           </div>
           <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => navigate(`/clients/${username}`)}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold bg-sky-500 hover:bg-sky-600 text-white transition-colors shadow-sm"
+            >
+              View Profile
+            </button>
             <button
               onClick={() => navigate('/clients')}
               className="px-5 py-2.5 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-sky-400 hover:text-sky-600 transition-all shadow-sm"
             >
               All Clients
-            </button>
-            <button
-              onClick={() => { setDone(false); setStep(0); setData({ profile: { pan: '', full_name: '', care_of: '', guardian_name: '', date_of_birth: '', gender: '', image: '' }, contact: { mobile: '', country_code: '91', email: '' }, address: { state: '', district: '', town_or_village: '', pincode: '', address_line_1: '', address_line_2: '' }, business: [defaultFirm()] }); }}
-              className="px-5 py-2.5 rounded-xl text-sm font-bold bg-sky-500 hover:bg-sky-600 text-white transition-colors shadow-sm"
-            >
-              Add Another
             </button>
           </div>
         </div>
@@ -537,18 +444,20 @@ export default function ClientCreate() {
         {/* Header */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate('/clients')}
+            onClick={() => navigate(`/clients/${username}`)}
             className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
           >
-            <ChevronLeft size={16} /> Clients
+            <ChevronLeft size={16} /> Profile
           </button>
           <span className="text-slate-300 dark:text-slate-600">/</span>
-          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">New Client</span>
+          <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Edit Client</span>
         </div>
 
         {/* Step indicator */}
         <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl rounded-sm border border-slate-200/60 dark:border-slate-700/60 shadow-sm p-6">
-          <StepIndicator steps={STEPS} current={step} />
+          <div className="max-w-md mx-auto">
+            <StepIndicator steps={STEPS} current={step} />
+          </div>
         </div>
 
         {/* Step content */}
@@ -577,16 +486,13 @@ export default function ClientCreate() {
                 errors={errors}
               />
             )}
-            {step === 2 && (
-              <StepBusiness firms={data.business} onChange={setBusiness} errors={errors} />
-            )}
           </div>
         </div>
 
         {/* Navigation */}
         <div className="flex items-center justify-between">
           <button
-            onClick={step === 0 ? () => navigate('/clients') : goBack}
+            onClick={step === 0 ? () => navigate(`/clients/${username}`) : goBack}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-sky-400 hover:text-sky-600 transition-all shadow-sm"
           >
             <ChevronLeft size={15} />
@@ -612,7 +518,7 @@ export default function ClientCreate() {
               disabled={submitting}
               className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-sky-500 hover:bg-sky-600 text-white transition-colors shadow-sm disabled:opacity-60"
             >
-              {submitting ? 'Creating…' : 'Create Client'}
+              {submitting ? 'Updating…' : 'Save Changes'}
               {!submitting && <CheckCircle size={15} />}
             </button>
           )}

@@ -27,7 +27,7 @@ const FIRM_TYPE_BADGE = {
   proprietorship: 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
   partnership: 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
   'private limited': 'bg-cyan-50 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
-  individual: 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 border border-sky-200 dark:border-sky-800',
+  individual: 'bg-blue-50 text-sky-700 dark:bg-blue-900/30 dark:text-sky-300 border border-sky-200 dark:border-sky-800',
   company: 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border border-violet-200 dark:border-violet-800',
 };
 const getFirmBadge = (t) => FIRM_TYPE_BADGE[(t || '').toLowerCase()] || 'bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700';
@@ -279,7 +279,7 @@ function EditProfileModal({ isOpen, onClose, data, username, onSaved }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 rounded-xl text-sm font-bold bg-sky-500 hover:bg-sky-600 text-white transition-colors disabled:opacity-60 shadow-sm"
+            className="px-5 py-2 rounded-xl text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white transition-colors disabled:opacity-60 shadow-sm"
           >
             {saving ? 'Saving…' : 'Save Changes'}
           </button>
@@ -305,7 +305,7 @@ function ConfirmModal({ isOpen, onClose, title, message, onConfirm, danger }) {
         <button
           onClick={handle}
           disabled={loading}
-          className={`px-5 py-2 rounded-xl text-sm font-bold text-white transition-colors disabled:opacity-60 shadow-sm ${danger ? 'bg-rose-500 hover:bg-rose-600' : 'bg-sky-500 hover:bg-sky-600'}`}
+          className={`px-5 py-2 rounded-xl text-sm font-bold text-white transition-colors disabled:opacity-60 shadow-sm ${danger ? 'bg-rose-500 hover:bg-rose-600' : 'bg-blue-500 hover:bg-blue-600'}`}
         >
           {loading ? 'Processing…' : 'Confirm'}
         </button>
@@ -370,7 +370,7 @@ export default function ClientProfile() {
   useEffect(() => { fetchClient(); }, [fetchClient]);
   useEffect(() => { if (activeTab === 'business') fetchFirms(); }, [activeTab, fetchFirms]);
 
-  const canEdit = client?.status === 'under review';
+  const canEdit = (client?.status || '').toLowerCase().trim() === 'under review';
 
   const handleDeleteClient = async () => {
     try {
@@ -435,7 +435,7 @@ export default function ClientProfile() {
 
   return (
     <div>
-      <div className="mx-auto space-y-2">
+      <div className="max-w-7xl mx-auto space-y-2">
 
         {/* ── Back + Header ── */}
         <div className="flex items-start justify-between gap-4">
@@ -446,22 +446,26 @@ export default function ClientProfile() {
             <ChevronLeft size={16} /> Clients
           </button>
           <div className="flex items-center gap-2">
-            {canEdit && (
-              <>
-                <button
-                  onClick={() => setEditOpen(true)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-sky-400 hover:text-sky-600 transition-all shadow-sm"
-                >
-                  <Edit2 size={13} /> Edit
-                </button>
-                <button
-                  onClick={() => setDeleteOpen(true)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-rose-600 hover:border-rose-400 transition-all shadow-sm"
-                >
-                  <Trash2 size={13} /> Delete
-                </button>
-              </>
-            )}
+            <button
+              onClick={() => navigate(`/clients/${username}/edit`)}
+              disabled={!canEdit}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-sm ${canEdit
+                ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-sky-400 hover:text-sky-600'
+                : 'bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60'
+                }`}
+            >
+              <Edit2 size={13} /> Edit
+            </button>
+            <button
+              onClick={() => setDeleteOpen(true)}
+              disabled={!canEdit}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-sm ${canEdit
+                ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-rose-600 hover:border-rose-400'
+                : 'bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed opacity-60'
+                }`}
+            >
+              <Trash2 size={13} /> Delete
+            </button>
           </div>
         </div>
 
@@ -492,11 +496,6 @@ export default function ClientProfile() {
                   <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm ${statusBadge}`}>
                     {statusLabel}
                   </span>
-                  {!canEdit && (
-                    <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                      <Shield size={10} /> Read only
-                    </span>
-                  )}
                 </div>
               </div>
               <div className="flex flex-wrap gap-3 mt-3">
@@ -518,7 +517,7 @@ export default function ClientProfile() {
               key={id}
               onClick={() => setActiveTab(id)}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === id
-                ? 'bg-sky-500 text-white shadow-sm'
+                ? 'bg-blue-500 text-white shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/60 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
             >
@@ -769,7 +768,7 @@ function EditFirmModal({ firm, onClose, onSaved }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2 rounded-xl text-sm font-bold bg-sky-500 hover:bg-sky-600 text-white transition-colors disabled:opacity-60 shadow-sm"
+            className="px-5 py-2 rounded-xl text-sm font-bold bg-blue-500 hover:bg-blue-600 text-white transition-colors disabled:opacity-60 shadow-sm"
           >
             {saving ? 'Saving…' : 'Save Changes'}
           </button>
