@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Briefcase, CheckSquare, Eye, IndianRupee, Layers
+  Briefcase, CheckSquare, Eye, IndianRupee, Layers, FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/apiCall';
@@ -233,6 +233,14 @@ export default function Services() {
       title="Services"
       description="Manage all your firm's services, fees, and SAC codes."
       accent="blue"
+      tabs={[
+        { id: 'services', label: 'Services Directory', icon: Briefcase },
+        { id: 'requests', label: 'Service Requests', icon: FileText }
+      ]}
+      activeTab="services"
+      onTabChange={(id) => {
+        if (id === 'requests') navigate('/service-requests');
+      }}
       onRefresh={fetchServices}
       refreshing={loading}
       refreshLabel="Refresh"

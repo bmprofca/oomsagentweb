@@ -18,6 +18,7 @@ import Clients from "./pages/Clients";
 import ClientCreate from "./pages/ClientCreate";
 import ClientProfile from "./pages/ClientProfile";
 import ClientEdit from "./pages/ClientEdit";
+import ServiceRequests from "./pages/ServiceRequests";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
                   <Route path="/clients/create" element={<ClientCreate />} />
                   <Route path="/clients/:username" element={<ClientProfile />} />
                   <Route path="/clients/:username/edit" element={<ClientEdit />} />
+                  <Route path="/service-requests" element={<ServiceRequests />} />
                 </Route>
               </Route>
 
